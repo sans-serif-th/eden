@@ -58,129 +58,149 @@ export function LessonStepPage() {
 
   return (
     <ScreenShell>
-      <div className="flex flex-1 flex-col gap-4 px-6 pt-11 pb-6">
-        <StepHeader step={stepNumber} total={TOTAL_STEPS} />
+      <div className="flex h-dvh flex-col">
+        <div className="flex-1 overflow-y-auto px-6 pt-11 pb-32">
+          <div className="flex flex-col gap-4">
+            <StepHeader step={stepNumber} total={TOTAL_STEPS} />
 
-        <h1 className="text-[25px] font-semibold text-ink">{step.title}</h1>
-        <p className="text-sm font-medium text-brand-accent">
-          {day.citation}
-        </p>
-
-        <ProgressBar percent={(stepNumber / TOTAL_STEPS) * 100} />
-
-        {step.slug === "prayer" && (
-          <div className="flex flex-col gap-2.5 rounded-[18px] bg-surface p-[18px]">
-            <p className="text-[13px] font-semibold text-brand-accent">
-              อธิษฐาน
+            <h1 className="text-[25px] font-semibold text-ink">
+              {step.title}
+            </h1>
+            <p className="text-sm font-medium text-brand-accent">
+              {day.citation}
             </p>
-            <p className="text-sm text-ink-muted">
-              {TEMPLATE_COPY.openingPrayerInstruction}
-            </p>
+
+            <ProgressBar percent={(stepNumber / TOTAL_STEPS) * 100} />
+
+            {step.slug === "prayer" && (
+              <div className="flex flex-col gap-2.5 rounded-[18px] bg-surface p-[18px]">
+                <p className="text-[13px] font-semibold text-brand-accent">
+                  อธิษฐาน
+                </p>
+                <p className="text-sm text-ink-muted">
+                  {TEMPLATE_COPY.openingPrayerInstruction}
+                </p>
+              </div>
+            )}
+
+            {step.slug === "memory-verse" && (
+              <div className="flex flex-col gap-2.5 rounded-[18px] bg-surface p-[18px]">
+                <p className="text-[13px] font-semibold text-brand-accent">
+                  ภาวนาพระวจนะ
+                </p>
+                <p className="text-sm text-ink-muted">{day.memoryVerse}</p>
+              </div>
+            )}
+
+            {step.slug === "reading" && (
+              <>
+                <div className="flex flex-col gap-2.5 rounded-[18px] bg-surface-tint p-[18px]">
+                  <p className="text-[13px] font-semibold text-brand-accent">
+                    อ่านพระธรรม {day.scriptureReference}
+                  </p>
+                  <p className="text-sm text-ink-muted">
+                    {day.reading.teaser}
+                  </p>
+                </div>
+                <p className="text-sm font-semibold text-ink">
+                  บันทึกคำตอบของคุณ
+                </p>
+                <textarea
+                  value={readingAnswer}
+                  onChange={(e) => setReadingAnswer(e.target.value)}
+                  placeholder="พิมพ์สิ่งที่คุณได้รับจากบทเรียนวันนี้…"
+                  className="h-[150px] w-full flex-none resize-none rounded-2xl border border-fieldline-strong bg-surface p-4 text-[15px] text-ink placeholder:text-ink-faint focus:border-brand-accent focus:outline-none"
+                />
+              </>
+            )}
+
+            {step.slug === "understanding" && (
+              <div className="flex flex-col gap-3 rounded-[18px] bg-surface p-[18px]">
+                <p className="text-[13px] font-semibold text-brand-accent">
+                  ทำความเข้าใจพระคัมภีร์ตอนนี้
+                </p>
+                <p className="text-[15px] font-medium text-ink">
+                  {day.understanding.question}
+                </p>
+                <ul className="flex flex-col gap-2.5">
+                  {day.understanding.explanation.map((point, i) => (
+                    <li key={i} className="flex gap-2.5 text-sm text-ink-muted">
+                      <span
+                        aria-hidden
+                        className="mt-2 h-1.5 w-1.5 flex-none rounded-full bg-brand-accent"
+                      />
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {step.slug === "reflection" && (
+              <div className="flex flex-col gap-2.5 rounded-[18px] bg-surface-tint p-[18px]">
+                <p className="text-[13px] font-semibold text-brand-accent">
+                  ข้อคิดและการตอบสนอง
+                </p>
+                <p className="text-sm text-ink-muted">{day.reflection}</p>
+              </div>
+            )}
+
+            {step.slug === "journal" &&
+              TEMPLATE_COPY.journalPrompts.map((prompt, i) => (
+                <div key={i} className="flex flex-col gap-2">
+                  <p className="text-sm font-semibold text-ink">
+                    {prompt.label}
+                  </p>
+                  <textarea
+                    value={journalAnswers[i]}
+                    onChange={(e) =>
+                      setJournalAnswers((prev) => {
+                        const next = [...prev] as [string, string];
+                        next[i] = e.target.value;
+                        return next;
+                      })
+                    }
+                    placeholder={prompt.placeholder}
+                    className="h-[110px] w-full flex-none resize-none rounded-2xl border border-fieldline-strong bg-surface p-4 text-[15px] text-ink placeholder:text-ink-faint focus:border-brand-accent focus:outline-none"
+                  />
+                </div>
+              ))}
+
+            {step.slug === "closing-prayer" && (
+              <>
+                <div className="flex flex-col gap-2.5 rounded-[18px] bg-surface p-[18px]">
+                  <p className="text-[13px] font-semibold text-brand-accent">
+                    อธิษฐาน
+                  </p>
+                  <p className="text-sm text-ink-muted">
+                    {day.closingPrayer}
+                  </p>
+                </div>
+                <textarea
+                  value={closingAnswer}
+                  onChange={(e) => setClosingAnswer(e.target.value)}
+                  placeholder="พิมพ์คำอธิษฐานของคุณ…"
+                  className="h-[120px] w-full flex-none resize-none rounded-2xl border border-fieldline-strong bg-surface p-4 text-[15px] text-ink placeholder:text-ink-faint focus:border-brand-accent focus:outline-none"
+                />
+              </>
+            )}
           </div>
-        )}
+        </div>
 
-        {step.slug === "memory-verse" && (
-          <div className="flex flex-col gap-2.5 rounded-[18px] bg-surface p-[18px]">
-            <p className="text-[13px] font-semibold text-brand-accent">
-              ภาวนาพระวจนะ
-            </p>
-            <p className="text-sm text-ink-muted">{day.memoryVerse}</p>
-          </div>
-        )}
-
-        {step.slug === "reading" && (
-          <>
-            <div className="flex flex-col gap-2.5 rounded-[18px] bg-surface-tint p-[18px]">
-              <p className="text-[13px] font-semibold text-brand-accent">
-                อ่านพระธรรม {day.scriptureReference}
-              </p>
-              <p className="text-sm text-ink-muted">{day.reading.teaser}</p>
+        <div className="fixed bottom-0 left-1/2 w-full max-w-[430px] -translate-x-1/2 border-t border-hairline bg-app px-6 pt-3 pb-6">
+          <div className="flex gap-3">
+            {stepNumber > 1 && (
+              <div className="shrink-0 basis-[112px]">
+                <OutlineButton onClick={handleBack} className="!w-auto px-6">
+                  ก่อนหน้า
+                </OutlineButton>
+              </div>
+            )}
+            <div className="flex-1">
+              <PrimaryButton onClick={handleContinue}>
+                {step.buttonLabel}
+              </PrimaryButton>
             </div>
-            <p className="text-sm font-semibold text-ink">
-              บันทึกคำตอบของคุณ
-            </p>
-            <textarea
-              value={readingAnswer}
-              onChange={(e) => setReadingAnswer(e.target.value)}
-              placeholder="พิมพ์สิ่งที่คุณได้รับจากบทเรียนวันนี้…"
-              className="h-[150px] w-full flex-none resize-none rounded-2xl border border-fieldline-strong bg-surface p-4 text-[15px] text-ink placeholder:text-ink-faint focus:border-brand-accent focus:outline-none"
-            />
-          </>
-        )}
-
-        {step.slug === "understanding" && (
-          <div className="flex flex-col gap-2.5 rounded-[18px] bg-surface p-[18px]">
-            <p className="text-[13px] font-semibold text-brand-accent">
-              ทำความเข้าใจพระคัมภีร์ตอนนี้
-            </p>
-            <p className="text-[15px] font-medium text-ink">
-              {day.understanding.question}
-            </p>
-            <p className="text-sm text-ink-muted">
-              {day.understanding.explanation}
-            </p>
-          </div>
-        )}
-
-        {step.slug === "reflection" && (
-          <div className="flex flex-col gap-2.5 rounded-[18px] bg-surface-tint p-[18px]">
-            <p className="text-[13px] font-semibold text-brand-accent">
-              ข้อคิดและการตอบสนอง
-            </p>
-            <p className="text-sm text-ink-muted">{day.reflection}</p>
-          </div>
-        )}
-
-        {step.slug === "journal" &&
-          TEMPLATE_COPY.journalPrompts.map((prompt, i) => (
-            <div key={i} className="flex flex-col gap-2">
-              <p className="text-sm font-semibold text-ink">{prompt.label}</p>
-              <textarea
-                value={journalAnswers[i]}
-                onChange={(e) =>
-                  setJournalAnswers((prev) => {
-                    const next = [...prev] as [string, string];
-                    next[i] = e.target.value;
-                    return next;
-                  })
-                }
-                placeholder={prompt.placeholder}
-                className="h-[110px] w-full flex-none resize-none rounded-2xl border border-fieldline-strong bg-surface p-4 text-[15px] text-ink placeholder:text-ink-faint focus:border-brand-accent focus:outline-none"
-              />
-            </div>
-          ))}
-
-        {step.slug === "closing-prayer" && (
-          <>
-            <div className="flex flex-col gap-2.5 rounded-[18px] bg-surface p-[18px]">
-              <p className="text-[13px] font-semibold text-brand-accent">
-                อธิษฐาน
-              </p>
-              <p className="text-sm text-ink-muted">{day.closingPrayer}</p>
-            </div>
-            <textarea
-              value={closingAnswer}
-              onChange={(e) => setClosingAnswer(e.target.value)}
-              placeholder="พิมพ์คำอธิษฐานของคุณ…"
-              className="h-[120px] w-full flex-none resize-none rounded-2xl border border-fieldline-strong bg-surface p-4 text-[15px] text-ink placeholder:text-ink-faint focus:border-brand-accent focus:outline-none"
-            />
-          </>
-        )}
-
-        <div className="flex-1" />
-
-        <div className="flex gap-3">
-          {stepNumber > 1 && (
-            <div className="shrink-0 basis-[112px]">
-              <OutlineButton onClick={handleBack} className="!w-auto px-6">
-                ก่อนหน้า
-              </OutlineButton>
-            </div>
-          )}
-          <div className="flex-1">
-            <PrimaryButton onClick={handleContinue}>
-              {step.buttonLabel}
-            </PrimaryButton>
           </div>
         </div>
       </div>
