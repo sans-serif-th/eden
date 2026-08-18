@@ -3,7 +3,7 @@ import { ScreenShell } from "../components/ScreenShell";
 import { ScreenHeader } from "../components/ScreenHeader";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { BottomNav } from "../components/BottomNav";
-import { currentBook, levels } from "../data/books";
+import { currentBook } from "../data/books";
 import { useAppState } from "../AppState";
 
 export function SelectBookPage() {
@@ -22,47 +22,8 @@ export function SelectBookPage() {
             เลือกเล่มที่กำลังเรียน
           </h1>
           <p className="text-[15px] text-ink-muted">
-            เริ่มต้นด้วยการเลือกระดับและคู่มือที่ต้องการเรียน
+            เริ่มต้นด้วยการเลือกคู่มือที่ต้องการเรียน
           </p>
-
-          <div className="flex flex-col gap-2">
-            <label htmlFor="level" className="text-[13px] font-medium text-ink">
-              ระดับ
-            </label>
-            <div className="relative">
-              <select
-                id="level"
-                defaultValue="year-1"
-                className="h-9 w-full appearance-none rounded-2xl border border-fieldline bg-surface px-3 py-2.5 text-[16px] font-medium text-ink disabled:text-ink-faint"
-              >
-                {levels.map((level) => (
-                  <option
-                    key={level.value}
-                    value={level.value}
-                    disabled={!level.enabled}
-                  >
-                    {level.label}
-                    {!level.enabled ? " (เร็ว ๆ นี้)" : ""}
-                  </option>
-                ))}
-              </select>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-ink-muted"
-              >
-                <path
-                  d="M4 6l4 4 4-4"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-          </div>
 
           <div className="flex flex-col gap-2">
             <span className="text-[13px] font-medium text-ink">

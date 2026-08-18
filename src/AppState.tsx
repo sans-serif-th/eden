@@ -10,6 +10,7 @@ export interface OnboardingAnswers {
 type DevotionState = {
   onboardingComplete: boolean;
   onboarding: OnboardingAnswers;
+  selectedLevel: string;
   bookSelected: boolean;
   currentDay: number;
   totalDays: number;
@@ -20,6 +21,7 @@ type DevotionState = {
     value: OnboardingAnswers[K],
   ) => void;
   completeOnboarding: () => void;
+  selectLevel: (level: string) => void;
   selectBook: () => void;
   setAnswer: (key: string, value: string) => void;
   completeStep: (step: number) => void;
@@ -37,6 +39,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [onboardingComplete, setOnboardingComplete] = useState(false);
   const [onboarding, setOnboarding] =
     useState<OnboardingAnswers>(defaultOnboarding);
+  const [selectedLevel, setSelectedLevel] = useState("year-1");
   const [bookSelected, setBookSelected] = useState(false);
   const [currentDay] = useState(1);
   const [currentStep, setCurrentStep] = useState(0);
@@ -45,6 +48,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const value: DevotionState = {
     onboardingComplete,
     onboarding,
+    selectedLevel,
     bookSelected,
     currentDay,
     totalDays: 366, // Year 1's Personal Calendar length (12 Books, leap-year edition)
@@ -53,6 +57,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     setOnboardingAnswer: (key, val) =>
       setOnboarding((prev) => ({ ...prev, [key]: val })),
     completeOnboarding: () => setOnboardingComplete(true),
+    selectLevel: (level) => setSelectedLevel(level),
     selectBook: () => setBookSelected(true),
     setAnswer: (step, val) =>
       setAnswers((prev) => ({ ...prev, [step]: val })),
