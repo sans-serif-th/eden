@@ -1,6 +1,7 @@
 import { Sprout } from "lucide-react";
 
-const DAY_LABELS = ["จ", "อ", "พ", "พฤ", "ศ", "ส", "อา"]; // Mon..Sun
+// Indexed by Date#getDay() (0 = Sun .. 6 = Sat).
+const DAY_LABELS = ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"];
 const MONTH_LABELS = [
   "มกราคม",
   "กุมภาพันธ์",
@@ -16,27 +17,18 @@ const MONTH_LABELS = [
   "ธันวาคม",
 ];
 
-// Loading lesson previews for every visible day would mean touching content
-// for the whole Mon-Sun week; capped to a ±2 day window around today to
-// keep this to at most 5 lookups regardless of which weekday "today" is.
-const SELECTABLE_RADIUS_DAYS = 2;
+const TRAILING_DAYS = 7;
 
-function getWeekDates(today: Date): Date[] {
-  const day = today.getDay(); // 0 = Sun
-  const mondayOffset = day === 0 ? -6 : 1 - day;
-  const monday = new Date(today);
-  monday.setDate(today.getDate() + mondayOffset);
-  monday.setHours(0, 0, 0, 0);
-  return Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(monday);
-    d.setDate(monday.getDate() + i);
+// The last 7 days ending today — showing lessons that haven't happened yet
+// added no value, so this never looks forward, only back.
+function getTrailingDates(today: Date): Date[] {
+  const base = new Date(today);
+  base.setHours(0, 0, 0, 0);
+  return Array.from({ length: TRAILING_DAYS }, (_, i) => {
+    const d = new Date(base);
+    d.setDate(base.getDate() - (TRAILING_DAYS - 1 - i));
     return d;
   });
-}
-
-function daysBetween(a: Date, b: Date): number {
-  const msPerDay = 1000 * 60 * 60 * 24;
-  return Math.round((b.setHours(0, 0, 0, 0) - a.setHours(0, 0, 0, 0)) / msPerDay);
 }
 
 export function WeekStrip({
@@ -49,7 +41,7 @@ export function WeekStrip({
   onSelectDate: (date: Date) => void;
 }) {
   const now = new Date();
-  const dates = getWeekDates(now);
+  const dates = getTrailingDates(now);
 
   const months = Array.from(
     new Set(dates.map((d) => MONTH_LABELS[d.getMonth()])),
@@ -64,22 +56,19 @@ export function WeekStrip({
         {dates.map((date, i) => {
           const key = date.toDateString();
           const isToday = key === now.toDateString();
-          const offset = daysBetween(new Date(now), new Date(date));
-          const isSelectable = Math.abs(offset) <= SELECTABLE_RADIUS_DAYS;
           const isSelected = key === selectedDate.toDateString();
 
           return (
             <button
               key={i}
               type="button"
-              disabled={!isSelectable}
               onClick={() => onSelectDate(date)}
-              className="flex flex-col items-center gap-1 disabled:cursor-not-allowed"
+              className="flex flex-col items-center gap-1"
             >
               <span
                 className={`text-[11px] font-medium ${isToday ? "text-brand" : "text-ink-faint"}`}
               >
-                {DAY_LABELS[i]}
+                {DAY_LABELS[date.getDay()]}
               </span>
               <div
                 className={`flex size-9 items-center justify-center rounded-full text-[16px] font-semibold transition-colors ${
@@ -89,9 +78,7 @@ export function WeekStrip({
                       ? "border-2 border-brand bg-surface-tint text-brand"
                       : isSelected
                         ? "border-2 border-ink-muted text-ink"
-                        : isSelectable
-                          ? "border border-fieldline text-ink-muted"
-                          : "border border-fieldline text-ink-faint/50"
+                        : "border border-fieldline text-ink-muted"
                 }`}
               >
                 {isToday && todayDone ? (
