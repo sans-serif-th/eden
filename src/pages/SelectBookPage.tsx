@@ -17,26 +17,26 @@ export function SelectBookPage() {
           <ScreenHeader title="เลือกเล่มที่เรียน" />
         </div>
         <div className="flex flex-1 flex-col gap-4 px-6 py-4">
-          <p className="text-xs font-semibold text-brand">EDEN</p>
+          <p className="text-[16px] font-semibold text-brand">EDEN</p>
           <h1 className="text-2xl font-semibold text-ink">
             เลือกเล่มที่กำลังเรียน
           </h1>
-          <p className="text-[15px] text-ink-muted">
+          <p className="text-[16px] text-ink-muted">
             เริ่มต้นด้วยการเลือกคู่มือที่ต้องการเรียน
           </p>
 
           <div className="flex flex-col gap-2">
-            <span className="text-[13px] font-medium text-ink">
+            <span className="text-[16px] font-medium text-ink">
               คู่มือเฝ้าเดี่ยว
             </span>
             <div className="flex flex-col gap-2 rounded-[18px] border-2 border-brand-accent bg-surface p-[18px]">
               <p className="text-[18px] font-semibold text-ink">
                 {currentBook.title}
               </p>
-              <p className="text-sm text-ink-muted">
+              <p className="text-[16px] text-ink-muted">
                 {currentBook.description}
               </p>
-              <p className="text-[13px] font-medium text-brand-accent">
+              <p className="text-[16px] font-medium text-brand-accent">
                 0 / {currentBook.totalDays} วัน
               </p>
             </div>

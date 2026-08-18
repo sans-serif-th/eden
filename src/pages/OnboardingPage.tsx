@@ -38,10 +38,10 @@ export function OnboardingPage() {
       <div className="flex h-dvh flex-col">
         <div className="flex-1 overflow-y-auto px-6 pt-14 pb-32">
           <div className="flex flex-col gap-4">
-            <p className="text-xs font-semibold text-brand">
+            <p className="text-[16px] font-semibold text-brand">
               เวลานัดหมายกับพระเจ้า
             </p>
-            <p className="text-sm font-medium text-ink-muted">
+            <p className="text-[16px] font-medium text-ink-muted">
               ขั้นที่ {stepNumber} จาก {ONBOARDING_TOTAL_STEPS}
             </p>
             <ProgressBar

@@ -20,18 +20,18 @@ export function SuccessPage() {
             <h1 className="text-[27px] font-semibold text-ink">
               เสร็จสิ้นวันนี้แล้ว
             </h1>
-            <p className="text-[15px] text-ink-muted">
+            <p className="text-[16px] text-ink-muted">
               บันทึกและความคืบหน้าของคุณถูกเก็บเรียบร้อย
             </p>
           </div>
           <div className="flex w-full flex-col gap-2.5 rounded-[18px] bg-surface p-[18px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.06)]">
-            <p className="text-sm font-medium text-brand-accent">
+            <p className="text-[16px] font-medium text-brand-accent">
               {currentBook.title}
             </p>
             <p className="text-[19px] font-semibold text-ink">
               วันที่ {currentDay} จาก {totalDays}
             </p>
-            <p className="text-sm text-ink-muted">
+            <p className="text-[16px] text-ink-muted">
               บทเรียนถัดไปจะพร้อมในวันถัดไป
             </p>
           </div>

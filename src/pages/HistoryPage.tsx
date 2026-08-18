@@ -12,7 +12,7 @@ export function HistoryPage() {
       <div className="flex flex-1 flex-col">
         <div className="flex flex-1 flex-col gap-3 px-6 py-4">
           <h1 className="text-[26px] font-semibold text-ink">ประวัติของฉัน</h1>
-          <p className="text-sm font-medium text-brand-accent">
+          <p className="text-[16px] font-medium text-brand-accent">
             {currentBook.title}
           </p>
 
@@ -26,7 +26,7 @@ export function HistoryPage() {
             />
           </div>
 
-          <p className="text-sm font-semibold text-ink">ล่าสุด</p>
+          <p className="text-[16px] font-semibold text-ink">ล่าสุด</p>
 
           <div className="flex flex-col gap-2">
             {history.map((row) => (
@@ -35,12 +35,12 @@ export function HistoryPage() {
                 className="flex items-center justify-between rounded-2xl bg-surface px-4 py-3"
               >
                 <div className="flex flex-col gap-0.5">
-                  <p className="text-[15px] font-semibold text-ink">
+                  <p className="text-[16px] font-semibold text-ink">
                     วันที่ {row.day}
                   </p>
-                  <p className="text-xs text-brand-accent">{row.status}</p>
+                  <p className="text-[16px] text-brand-accent">{row.status}</p>
                 </div>
-                <span className="flex items-center gap-0.5 text-[13px] text-nav-inactive">
+                <span className="flex items-center gap-0.5 text-[16px] text-nav-inactive">
                   {row.label} <ChevronRight size={14} />
                 </span>
               </div>
