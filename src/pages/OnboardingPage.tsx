@@ -8,6 +8,7 @@ import {
   ONBOARDING_TOTAL_STEPS,
   durationOptions,
   placeOptions,
+  startOptions,
 } from "../data/onboarding";
 import { useAppState } from "../AppState";
 
@@ -85,6 +86,33 @@ export function OnboardingPage() {
                   }
                   formatLabel={(m) => `${m} นาที`}
                 />
+              </>
+            )}
+
+            {stepNumber === 4 && (
+              <>
+                <h1 className="text-2xl font-semibold text-ink">
+                  ข้าพเจ้าต้องการเริ่มเฝ้าเดี่ยว
+                </h1>
+                <OptionGroup
+                  options={startOptions.map((o) => o.value)}
+                  value={onboarding.startPreference}
+                  onChange={(v) => setOnboardingAnswer("startPreference", v)}
+                  formatLabel={(v) =>
+                    startOptions.find((o) => o.value === v)?.label ?? v
+                  }
+                />
+                {onboarding.startPreference === "custom" && (
+                  <input
+                    type="date"
+                    value={onboarding.customStartDate}
+                    min={new Date().toISOString().slice(0, 10)}
+                    onChange={(e) =>
+                      setOnboardingAnswer("customStartDate", e.target.value)
+                    }
+                    className="h-14 w-full rounded-2xl border border-fieldline bg-surface px-4 text-[16px] font-medium text-ink focus:border-brand-accent focus:outline-none"
+                  />
+                )}
               </>
             )}
           </div>
