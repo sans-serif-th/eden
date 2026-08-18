@@ -19,9 +19,10 @@ import { useAppState } from "../AppState";
 
 export function TodayPage() {
   const navigate = useNavigate();
-  const { currentStep, activeEnrollment } = useAppState();
+  const { currentDay, activeEnrollment } = useAppState();
   const [selectedDate, setSelectedDate] = useState(new Date());
 
+  const currentStep = activeEnrollment.dayRecords[currentDay]?.currentStep ?? 0;
   const notStarted = currentStep === 0;
   const doneToday = currentStep > TOTAL_STEPS;
   const activeStep = STEP_DEFINITIONS[Math.min(currentStep, TOTAL_STEPS) - 1];
@@ -29,8 +30,8 @@ export function TodayPage() {
   const ctaLabel = notStarted ? "เริ่มเฝ้าเดี่ยว" : doneToday ? "ดูสรุปวันนี้" : "ทำต่อ";
 
   const handleCta = () => {
-    if (doneToday) navigate("/success");
-    else navigate(`/lesson/${notStarted ? 1 : currentStep}`);
+    if (doneToday) navigate("/success", { state: { day: currentDay } });
+    else navigate(`/lesson/${currentDay}/${notStarted ? 1 : currentStep}`);
   };
 
   const isToday = selectedDate.toDateString() === new Date().toDateString();

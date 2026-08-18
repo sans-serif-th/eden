@@ -8,11 +8,14 @@ export interface OnboardingAnswers {
   preferredDurationMinutes: number;
 }
 
-// One Day's logged progress. `status` is only ever set once the Day's full
+// One Day's logged progress. `currentStep` lets a catch-up session resume
+// exactly where it left off, the same way today's Day already could before
+// this was tracked per-Day. `status` is only ever set once the Day's full
 // step flow is completed — its absence means the Day is untouched or has an
 // in-progress draft.
 export interface DayRecord {
   answers: Record<string, string>;
+  currentStep?: number;
   status?: "done";
 }
 
@@ -37,7 +40,6 @@ type DevotionState = {
   bookSelected: boolean;
   currentDay: number;
   totalDays: number;
-  currentStep: number; // 0 = not started, 1..TOTAL_STEPS = in progress, TOTAL_STEPS+1 = done today
   setOnboardingAnswer: <K extends keyof OnboardingAnswers>(
     key: K,
     value: OnboardingAnswers[K],
@@ -56,7 +58,7 @@ type DevotionState = {
   cancelLevelSwitch: () => void;
   selectBook: () => void;
   setDayAnswer: (day: number, key: string, value: string) => void;
-  completeStep: (step: number) => void;
+  completeStep: (day: number, step: number) => void;
 };
 
 const AppStateContext = createContext<DevotionState | null>(null);
@@ -92,7 +94,6 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       activeEnrollment.customStartDate,
     ),
   );
-  const [currentStep, setCurrentStep] = useState(0);
 
   const value: DevotionState = {
     onboardingComplete,
@@ -103,7 +104,6 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     bookSelected,
     currentDay,
     totalDays: 366, // Year 1's Personal Calendar length (12 Books, leap-year edition)
-    currentStep,
     setOnboardingAnswer: (key, val) =>
       setOnboarding((prev) => ({ ...prev, [key]: val })),
     completeOnboarding: () => setOnboardingComplete(true),
@@ -130,9 +130,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         dayRecords: {},
       });
       setPendingLevel(null);
-      // A new Enrollment starts its own journey — today's in-progress step
-      // and logged answers belong to the old plan and aren't touched.
-      setCurrentStep(0);
+      // A new Enrollment starts its own journey — the old plan's dayRecords
+      // stay behind on the archived Enrollment, untouched.
     },
     cancelLevelSwitch: () => setPendingLevel(null),
     selectBook: () => setBookSelected(true),
@@ -147,21 +146,19 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
           },
         },
       })),
-    completeStep: (step) => {
+    completeStep: (day, step) => {
       const next = step >= TOTAL_STEPS ? TOTAL_STEPS + 1 : step + 1;
-      setCurrentStep(next);
-      if (next > TOTAL_STEPS) {
-        setActiveEnrollment((prev) => ({
-          ...prev,
-          dayRecords: {
-            ...prev.dayRecords,
-            [currentDay]: {
-              answers: prev.dayRecords[currentDay]?.answers ?? {},
-              status: "done",
-            },
+      setActiveEnrollment((prev) => ({
+        ...prev,
+        dayRecords: {
+          ...prev.dayRecords,
+          [day]: {
+            answers: prev.dayRecords[day]?.answers ?? {},
+            currentStep: next,
+            ...(next > TOTAL_STEPS ? { status: "done" as const } : {}),
           },
-        }));
-      }
+        },
+      }));
     },
   };
 
