@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ScreenShell } from "../components/ScreenShell";
 import { StepHeader } from "../components/StepHeader";
 import { ProgressBar } from "../components/ProgressBar";
-import { PrimaryButton } from "../components/PrimaryButton";
+import { OutlineButton, PrimaryButton } from "../components/PrimaryButton";
 import {
   STEP_DEFINITIONS,
   TEMPLATE_COPY,
@@ -34,7 +34,7 @@ export function LessonStepPage() {
 
   if (!step || !day) return null;
 
-  const handleContinue = () => {
+  const persistDraft = () => {
     if (step.slug === "reading") setAnswer(`${stepNumber}-reading`, readingAnswer);
     if (step.slug === "closing-prayer")
       setAnswer(`${stepNumber}-closing`, closingAnswer);
@@ -42,9 +42,18 @@ export function LessonStepPage() {
       setAnswer(`${stepNumber}-journal-0`, journalAnswers[0]);
       setAnswer(`${stepNumber}-journal-1`, journalAnswers[1]);
     }
+  };
+
+  const handleContinue = () => {
+    persistDraft();
     completeStep(stepNumber);
     if (stepNumber >= TOTAL_STEPS) navigate("/success");
     else navigate(`/lesson/${stepNumber + 1}`);
+  };
+
+  const handleBack = () => {
+    persistDraft();
+    navigate(`/lesson/${stepNumber - 1}`);
   };
 
   return (
@@ -160,9 +169,20 @@ export function LessonStepPage() {
 
         <div className="flex-1" />
 
-        <PrimaryButton onClick={handleContinue}>
-          {step.buttonLabel}
-        </PrimaryButton>
+        <div className="flex gap-3">
+          {stepNumber > 1 && (
+            <div className="shrink-0 basis-[112px]">
+              <OutlineButton onClick={handleBack} className="!w-auto px-6">
+                ก่อนหน้า
+              </OutlineButton>
+            </div>
+          )}
+          <div className="flex-1">
+            <PrimaryButton onClick={handleContinue}>
+              {step.buttonLabel}
+            </PrimaryButton>
+          </div>
+        </div>
       </div>
     </ScreenShell>
   );
