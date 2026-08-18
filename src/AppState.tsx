@@ -8,11 +8,24 @@ export interface OnboardingAnswers {
   preferredDurationMinutes: number;
 }
 
+// One Day's logged progress. `status` is only ever set once the Day's full
+// step flow is completed — its absence means the Day is untouched or has an
+// in-progress draft.
+export interface DayRecord {
+  answers: Record<string, string>;
+  status?: "done";
+}
+
 export interface Enrollment {
   level: string;
   startPreference: StartPreference;
   customStartDate: string;
   startedAt: string; // ISO date this Enrollment was created, for the archive list
+  // Keyed by Personal-Calendar day number. Lives on the Enrollment (not a
+  // separate top-level map) so archiving a switched-away-from Enrollment
+  // carries its logged Days with it, and a new Enrollment's day numbers
+  // never collide with an old one's.
+  dayRecords: Record<number, DayRecord>;
 }
 
 type DevotionState = {
@@ -25,7 +38,6 @@ type DevotionState = {
   currentDay: number;
   totalDays: number;
   currentStep: number; // 0 = not started, 1..TOTAL_STEPS = in progress, TOTAL_STEPS+1 = done today
-  answers: Record<string, string>;
   setOnboardingAnswer: <K extends keyof OnboardingAnswers>(
     key: K,
     value: OnboardingAnswers[K],
@@ -43,7 +55,7 @@ type DevotionState = {
   ) => void;
   cancelLevelSwitch: () => void;
   selectBook: () => void;
-  setAnswer: (key: string, value: string) => void;
+  setDayAnswer: (day: number, key: string, value: string) => void;
   completeStep: (step: number) => void;
 };
 
@@ -60,6 +72,7 @@ const defaultEnrollment: Enrollment = {
   startPreference: "today",
   customStartDate: "",
   startedAt: new Date().toISOString(),
+  dayRecords: {},
 };
 
 export function AppStateProvider({ children }: { children: ReactNode }) {
@@ -80,7 +93,6 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     ),
   );
   const [currentStep, setCurrentStep] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
 
   const value: DevotionState = {
     onboardingComplete,
@@ -92,7 +104,6 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     currentDay,
     totalDays: 366, // Year 1's Personal Calendar length (12 Books, leap-year edition)
     currentStep,
-    answers,
     setOnboardingAnswer: (key, val) =>
       setOnboarding((prev) => ({ ...prev, [key]: val })),
     completeOnboarding: () => setOnboardingComplete(true),
@@ -116,6 +127,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         startPreference,
         customStartDate,
         startedAt: new Date().toISOString(),
+        dayRecords: {},
       });
       setPendingLevel(null);
       // A new Enrollment starts its own journey — today's in-progress step
@@ -124,10 +136,33 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     },
     cancelLevelSwitch: () => setPendingLevel(null),
     selectBook: () => setBookSelected(true),
-    setAnswer: (step, val) =>
-      setAnswers((prev) => ({ ...prev, [step]: val })),
-    completeStep: (step) =>
-      setCurrentStep(step >= TOTAL_STEPS ? TOTAL_STEPS + 1 : step + 1),
+    setDayAnswer: (day, key, val) =>
+      setActiveEnrollment((prev) => ({
+        ...prev,
+        dayRecords: {
+          ...prev.dayRecords,
+          [day]: {
+            ...prev.dayRecords[day],
+            answers: { ...(prev.dayRecords[day]?.answers ?? {}), [key]: val },
+          },
+        },
+      })),
+    completeStep: (step) => {
+      const next = step >= TOTAL_STEPS ? TOTAL_STEPS + 1 : step + 1;
+      setCurrentStep(next);
+      if (next > TOTAL_STEPS) {
+        setActiveEnrollment((prev) => ({
+          ...prev,
+          dayRecords: {
+            ...prev.dayRecords,
+            [currentDay]: {
+              answers: prev.dayRecords[currentDay]?.answers ?? {},
+              status: "done",
+            },
+          },
+        }));
+      }
+    },
   };
 
   return (

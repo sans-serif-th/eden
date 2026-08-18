@@ -5,7 +5,7 @@ import { BottomNav } from "../components/BottomNav";
 import { OptionGroup } from "../components/OptionGroup";
 import { BottomSheet } from "../components/BottomSheet";
 import { PrimaryButton } from "../components/PrimaryButton";
-import { currentBook, history, levels } from "../data/books";
+import { currentBook, levels } from "../data/books";
 import {
   startOptions,
   formatThaiDateShort,
@@ -14,18 +14,17 @@ import {
 import { useAppState } from "../AppState";
 
 export function StatsPage() {
-  const { activeEnrollment, answers, setEnrollmentStart } = useAppState();
+  const { activeEnrollment, setEnrollmentStart } = useAppState();
   const [isEditingPlan, setIsEditingPlan] = useState(false);
 
   const level = levels.find((l) => l.value === activeEnrollment.level);
-  const daysStudied = history.filter(
-    (h) => h.status === "เสร็จสิ้นแล้ว",
-  ).length;
+  const dayRecords = Object.values(activeEnrollment.dayRecords);
+  const daysStudied = dayRecords.filter((r) => r.status === "done").length;
   const percent = (daysStudied / currentBook.totalDays) * 100;
 
-  const totalLogs = Object.values(answers).filter(
-    (v) => v.trim().length > 0,
-  ).length;
+  const totalLogs = dayRecords
+    .flatMap((r) => Object.values(r.answers))
+    .filter((v) => v.trim().length > 0).length;
 
   const startDate = getPlanStartDate(
     activeEnrollment.startPreference,
