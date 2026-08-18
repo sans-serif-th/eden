@@ -9,6 +9,7 @@ import { SuccessPage } from "./pages/SuccessPage";
 import { HistoryPage } from "./pages/HistoryPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { SettingsPage } from "./pages/SettingsPage";
+import { StatsPage } from "./pages/StatsPage";
 
 function RootRoute() {
   const { onboardingComplete } = useAppState();
@@ -31,6 +32,7 @@ export default function App() {
           <Route path="/lesson/:step" element={<LessonStepPage />} />
           <Route path="/success" element={<SuccessPage />} />
           <Route path="/history" element={<HistoryPage />} />
+          <Route path="/stats" element={<StatsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
