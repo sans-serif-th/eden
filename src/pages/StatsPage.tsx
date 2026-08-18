@@ -3,6 +3,8 @@ import { ScreenShell } from "../components/ScreenShell";
 import { ProgressBar } from "../components/ProgressBar";
 import { BottomNav } from "../components/BottomNav";
 import { OptionGroup } from "../components/OptionGroup";
+import { BottomSheet } from "../components/BottomSheet";
+import { PrimaryButton } from "../components/PrimaryButton";
 import { currentBook, history, levels } from "../data/books";
 import {
   startOptions,
@@ -66,32 +68,37 @@ export function StatsPage() {
               <p className="text-[16px] text-ink-muted">
                 คาดว่าจะเรียนจบวันที่ {formatThaiDateShort(endDate)}
               </p>
-
-              {isEditingPlan && (
-                <div className="flex flex-col gap-3 pt-1">
-                  <OptionGroup
-                    options={startOptions.map((o) => o.value)}
-                    value={onboarding.startPreference}
-                    onChange={(v) => setOnboardingAnswer("startPreference", v)}
-                    formatLabel={(v) =>
-                      startOptions.find((o) => o.value === v)?.label ?? v
-                    }
-                  />
-                  {onboarding.startPreference === "custom" && (
-                    <input
-                      type="date"
-                      value={onboarding.customStartDate}
-                      min={new Date().toISOString().slice(0, 10)}
-                      onChange={(e) =>
-                        setOnboardingAnswer("customStartDate", e.target.value)
-                      }
-                      className="h-14 w-full rounded-2xl border border-fieldline bg-surface px-4 text-[16px] font-medium text-ink focus:border-brand-accent focus:outline-none"
-                    />
-                  )}
-                </div>
-              )}
             </div>
           </div>
+
+          <BottomSheet
+            open={isEditingPlan}
+            onClose={() => setIsEditingPlan(false)}
+            title="แก้ไขแผนการเฝ้าเดี่ยว"
+          >
+            <OptionGroup
+              options={startOptions.map((o) => o.value)}
+              value={onboarding.startPreference}
+              onChange={(v) => setOnboardingAnswer("startPreference", v)}
+              formatLabel={(v) =>
+                startOptions.find((o) => o.value === v)?.label ?? v
+              }
+            />
+            {onboarding.startPreference === "custom" && (
+              <input
+                type="date"
+                value={onboarding.customStartDate}
+                min={new Date().toISOString().slice(0, 10)}
+                onChange={(e) =>
+                  setOnboardingAnswer("customStartDate", e.target.value)
+                }
+                className="h-14 w-full rounded-2xl border border-fieldline bg-surface px-4 text-[16px] font-medium text-ink focus:border-brand-accent focus:outline-none"
+              />
+            )}
+            <PrimaryButton onClick={() => setIsEditingPlan(false)}>
+              บันทึก
+            </PrimaryButton>
+          </BottomSheet>
 
           <div className="flex flex-col gap-3 rounded-[18px] bg-surface p-5 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.06)]">
             <p className="text-[16px] font-semibold text-brand-accent">
