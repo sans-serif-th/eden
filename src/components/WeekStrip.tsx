@@ -57,7 +57,7 @@ export function WeekStrip({
 
   return (
     <div className="flex flex-col gap-2.5">
-      <p className="text-[13px] font-semibold text-ink-muted">
+      <p className="text-[16px] font-semibold text-ink-muted">
         {months.join(" – ")} {now.getFullYear() + 543}
       </p>
       <div className="flex items-center justify-between">
@@ -82,14 +82,16 @@ export function WeekStrip({
                 {DAY_LABELS[i]}
               </span>
               <div
-                className={`flex size-9 items-center justify-center rounded-full text-[13px] font-semibold transition-colors ${
+                className={`flex size-9 items-center justify-center rounded-full text-[16px] font-semibold transition-colors ${
                   isToday && todayDone
                     ? "bg-brand text-white"
-                    : isSelected
+                    : isToday
                       ? "border-2 border-brand bg-surface-tint text-brand"
-                      : isSelectable
-                        ? "border border-fieldline text-ink-muted"
-                        : "border border-fieldline text-ink-faint/50"
+                      : isSelected
+                        ? "border-2 border-ink-muted text-ink"
+                        : isSelectable
+                          ? "border border-fieldline text-ink-muted"
+                          : "border border-fieldline text-ink-faint/50"
                 }`}
               >
                 {isToday && todayDone ? (

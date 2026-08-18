@@ -92,7 +92,7 @@ export function LessonStepPage() {
             <h1 className="text-[25px] font-semibold text-ink">
               {step.title}
             </h1>
-            <p className="text-sm font-medium text-brand-accent">
+            <p className="text-[16px] font-medium text-brand-accent">
               {day.citation}
             </p>
 
@@ -100,10 +100,10 @@ export function LessonStepPage() {
 
             {step.slug === "prayer" && (
               <div className="flex flex-col gap-2.5 rounded-[18px] bg-surface p-[18px]">
-                <p className="text-[13px] font-semibold text-brand-accent">
+                <p className="text-[16px] font-semibold text-brand-accent">
                   อธิษฐาน
                 </p>
-                <p className="text-sm text-ink-muted">
+                <p className="text-[16px] text-ink-muted">
                   {TEMPLATE_COPY.openingPrayerInstruction}
                 </p>
               </div>
@@ -111,46 +111,46 @@ export function LessonStepPage() {
 
             {step.slug === "memory-verse" && (
               <div className="flex flex-col gap-2.5 rounded-[18px] bg-surface p-[18px]">
-                <p className="text-[13px] font-semibold text-brand-accent">
+                <p className="text-[16px] font-semibold text-brand-accent">
                   ภาวนาพระวจนะ
                 </p>
-                <p className="text-sm text-ink-muted">{day.memoryVerse}</p>
+                <p className="text-[16px] text-ink-muted">{day.memoryVerse}</p>
               </div>
             )}
 
             {step.slug === "reading" && (
               <>
                 <div className="flex flex-col gap-2.5 rounded-[18px] bg-surface-tint p-[18px]">
-                  <p className="text-[13px] font-semibold text-brand-accent">
+                  <p className="text-[16px] font-semibold text-brand-accent">
                     อ่านพระธรรม {day.scriptureReference}
                   </p>
-                  <p className="text-sm text-ink-muted">
+                  <p className="text-[16px] text-ink-muted">
                     {day.reading.teaser}
                   </p>
                 </div>
-                <p className="text-sm font-semibold text-ink">
+                <p className="text-[16px] font-semibold text-ink">
                   บันทึกคำตอบของคุณ
                 </p>
                 <textarea
                   value={readingAnswer}
                   onChange={(e) => setReadingAnswer(e.target.value)}
                   placeholder="พิมพ์สิ่งที่คุณได้รับจากบทเรียนวันนี้…"
-                  className="h-[150px] w-full flex-none resize-none rounded-2xl border border-fieldline-strong bg-surface p-4 text-[15px] text-ink placeholder:text-ink-faint focus:border-brand-accent focus:outline-none"
+                  className="h-[150px] w-full flex-none resize-none rounded-2xl border border-fieldline-strong bg-surface p-4 text-[16px] text-ink placeholder:text-ink-faint focus:border-brand-accent focus:outline-none"
                 />
               </>
             )}
 
             {step.slug === "understanding" && (
               <div className="flex flex-col gap-3 rounded-[18px] bg-surface p-[18px]">
-                <p className="text-[13px] font-semibold text-brand-accent">
+                <p className="text-[16px] font-semibold text-brand-accent">
                   ทำความเข้าใจพระคัมภีร์ตอนนี้
                 </p>
-                <p className="text-[15px] font-medium text-ink">
+                <p className="text-[16px] font-medium text-ink">
                   {day.understanding.question}
                 </p>
                 <ul className="flex flex-col gap-2.5">
                   {day.understanding.explanation.map((point, i) => (
-                    <li key={i} className="flex gap-2.5 text-sm text-ink-muted">
+                    <li key={i} className="flex gap-2.5 text-[16px] text-ink-muted">
                       <span
                         aria-hidden
                         className="mt-2 h-1.5 w-1.5 flex-none rounded-full bg-brand-accent"
@@ -164,17 +164,17 @@ export function LessonStepPage() {
 
             {step.slug === "reflection" && (
               <div className="flex flex-col gap-2.5 rounded-[18px] bg-surface-tint p-[18px]">
-                <p className="text-[13px] font-semibold text-brand-accent">
+                <p className="text-[16px] font-semibold text-brand-accent">
                   ข้อคิดและการตอบสนอง
                 </p>
-                <p className="text-sm text-ink-muted">{day.reflection}</p>
+                <p className="text-[16px] text-ink-muted">{day.reflection}</p>
               </div>
             )}
 
             {step.slug === "journal" &&
               TEMPLATE_COPY.journalPrompts.map((prompt, i) => (
                 <div key={i} className="flex flex-col gap-2">
-                  <p className="text-sm font-semibold text-ink">
+                  <p className="text-[16px] font-semibold text-ink">
                     {prompt.label}
                   </p>
                   <textarea
@@ -187,7 +187,7 @@ export function LessonStepPage() {
                       })
                     }
                     placeholder={prompt.placeholder}
-                    className="h-[110px] w-full flex-none resize-none rounded-2xl border border-fieldline-strong bg-surface p-4 text-[15px] text-ink placeholder:text-ink-faint focus:border-brand-accent focus:outline-none"
+                    className="h-[110px] w-full flex-none resize-none rounded-2xl border border-fieldline-strong bg-surface p-4 text-[16px] text-ink placeholder:text-ink-faint focus:border-brand-accent focus:outline-none"
                   />
                 </div>
               ))}
@@ -195,10 +195,10 @@ export function LessonStepPage() {
             {step.slug === "closing-prayer" && (
               <>
                 <div className="flex flex-col gap-2.5 rounded-[18px] bg-surface p-[18px]">
-                  <p className="text-[13px] font-semibold text-brand-accent">
+                  <p className="text-[16px] font-semibold text-brand-accent">
                     อธิษฐาน
                   </p>
-                  <p className="text-sm text-ink-muted">
+                  <p className="text-[16px] text-ink-muted">
                     {day.closingPrayer}
                   </p>
                 </div>
@@ -206,7 +206,7 @@ export function LessonStepPage() {
                   value={closingAnswer}
                   onChange={(e) => setClosingAnswer(e.target.value)}
                   placeholder="พิมพ์คำอธิษฐานของคุณ…"
-                  className="h-[120px] w-full flex-none resize-none rounded-2xl border border-fieldline-strong bg-surface p-4 text-[15px] text-ink placeholder:text-ink-faint focus:border-brand-accent focus:outline-none"
+                  className="h-[120px] w-full flex-none resize-none rounded-2xl border border-fieldline-strong bg-surface p-4 text-[16px] text-ink placeholder:text-ink-faint focus:border-brand-accent focus:outline-none"
                 />
               </>
             )}

@@ -17,11 +17,11 @@ export function SelectLevelPage() {
           <ScreenHeader title="เลือกระดับ" />
         </div>
         <div className="flex flex-1 flex-col gap-4 px-6 py-4">
-          <p className="text-xs font-semibold text-brand">EDEN</p>
+          <p className="text-[16px] font-semibold text-brand">EDEN</p>
           <h1 className="text-2xl font-semibold text-ink">
             เลือกระดับที่ต้องการเรียน
           </h1>
-          <p className="text-[15px] text-ink-muted">
+          <p className="text-[16px] text-ink-muted">
             แต่ละระดับมีคู่มือเฝ้าเดี่ยวของตัวเอง เลือกระดับที่เหมาะกับคุณ
           </p>
 
@@ -44,7 +44,7 @@ export function SelectLevelPage() {
                 >
                   <span>{level.label}</span>
                   {!level.enabled && (
-                    <span className="text-xs text-ink-faint">เร็ว ๆ นี้</span>
+                    <span className="text-[16px] text-ink-faint">เร็ว ๆ นี้</span>
                   )}
                 </button>
               );
