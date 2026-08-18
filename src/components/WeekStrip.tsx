@@ -32,11 +32,11 @@ function getTrailingDates(today: Date): Date[] {
 }
 
 export function WeekStrip({
-  todayDone,
+  doneDates,
   selectedDate,
   onSelectDate,
 }: {
-  todayDone: boolean;
+  doneDates: Set<string>;
   selectedDate: Date;
   onSelectDate: (date: Date) => void;
 }) {
@@ -57,6 +57,7 @@ export function WeekStrip({
           const key = date.toDateString();
           const isToday = key === now.toDateString();
           const isSelected = key === selectedDate.toDateString();
+          const isDone = doneDates.has(key);
 
           return (
             <button
@@ -72,7 +73,7 @@ export function WeekStrip({
               </span>
               <div
                 className={`flex size-9 items-center justify-center rounded-full text-[16px] font-semibold transition-colors ${
-                  isToday && todayDone
+                  isDone
                     ? "bg-brand text-white"
                     : isToday
                       ? "border-2 border-brand bg-surface-tint text-brand"
@@ -81,7 +82,7 @@ export function WeekStrip({
                         : "border border-fieldline text-ink-muted"
                 }`}
               >
-                {isToday && todayDone ? (
+                {isDone ? (
                   <Sprout size={16} strokeWidth={2.5} />
                 ) : (
                   date.getDate()
