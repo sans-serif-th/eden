@@ -3,6 +3,7 @@ import { ScreenShell } from "../components/ScreenShell";
 import { ProgressBar } from "../components/ProgressBar";
 import { OutlineButton, PrimaryButton } from "../components/PrimaryButton";
 import { OptionGroup } from "../components/OptionGroup";
+import { TimeWheelPicker } from "../components/TimeWheelPicker";
 import {
   ONBOARDING_TOTAL_STEPS,
   durationOptions,
@@ -51,13 +52,9 @@ export function OnboardingPage() {
                 <h1 className="text-2xl font-semibold text-ink">
                   เวลาที่เหมาะสมที่สุดสำหรับข้าพเจ้าในการเฝ้าเดี่ยวคือ
                 </h1>
-                <input
-                  type="time"
+                <TimeWheelPicker
                   value={onboarding.preferredTime}
-                  onChange={(e) =>
-                    setOnboardingAnswer("preferredTime", e.target.value)
-                  }
-                  className="h-14 w-full rounded-2xl border border-fieldline bg-surface px-4 text-[20px] font-semibold text-ink focus:border-brand-accent focus:outline-none"
+                  onChange={(v) => setOnboardingAnswer("preferredTime", v)}
                 />
               </>
             )}
