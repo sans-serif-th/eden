@@ -70,7 +70,7 @@ export function TodayPage() {
             planNotStartedYet ? (
               <div className="flex flex-col gap-3 rounded-[22px] bg-surface p-5 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.06)]">
                 <p className="text-[16px] font-semibold text-brand-accent">
-                  ยังไม่ถึงวันเริ่มต้น
+                  ยังไม่มีแผนการเรียน
                 </p>
                 <p className="text-[21px] font-semibold text-ink">
                   แผนการเฝ้าเดี่ยวของคุณยังไม่เริ่ม
@@ -96,7 +96,7 @@ export function TodayPage() {
                       {STEP_DEFINITIONS[0].title}
                     </p>
                     <p className="text-[16px] text-ink-muted">
-                      ยังไม่เริ่มบทเรียนวันนี้
+                      พร้อมเริ่มบทเรียนวันนี้
                     </p>
                   </>
                 ) : (
@@ -129,7 +129,7 @@ export function TodayPage() {
             <div className="flex flex-col gap-3 rounded-[22px] bg-surface p-5 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.06)]">
               <p className="text-[16px] font-semibold text-brand-accent">
                 {selectedDayNumber < 1
-                  ? "ยังไม่ถึงวันเริ่มต้น"
+                  ? "ยังไม่มีแผนการเรียน"
                   : `บทเรียนวันที่ ${selectedDayNumber}`}
               </p>
               {selectedDayNumber < 1 ? (
