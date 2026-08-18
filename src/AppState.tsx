@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { TOTAL_STEPS } from "./data/stepDefinitions";
-import type { StartPreference } from "./data/onboarding";
+import { getBookDayForDate, type StartPreference } from "./data/onboarding";
 
 export interface OnboardingAnswers {
   preferredTime: string; // "HH:mm"
@@ -46,7 +46,10 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     useState<OnboardingAnswers>(defaultOnboarding);
   const [selectedLevel, setSelectedLevel] = useState("year-1");
   const [bookSelected, setBookSelected] = useState(false);
-  const [currentDay] = useState(1);
+  const currentDay = Math.max(
+    1,
+    getBookDayForDate(new Date(), onboarding.startPreference, onboarding.customStartDate),
+  );
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
 
