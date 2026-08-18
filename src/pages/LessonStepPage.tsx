@@ -17,7 +17,9 @@ const UNDERSTANDING_STEP = 4;
 export function LessonStepPage() {
   const { step: stepParam } = useParams();
   const navigate = useNavigate();
-  const { currentDay, answers, setAnswer, completeStep } = useAppState();
+  const { currentDay, activeEnrollment, setDayAnswer, completeStep } =
+    useAppState();
+  const answers = activeEnrollment.dayRecords[currentDay]?.answers ?? {};
 
   const stepNumber = Number(stepParam);
   const step = STEP_DEFINITIONS[stepNumber - 1];
@@ -50,12 +52,13 @@ export function LessonStepPage() {
   if (!step || !day) return null;
 
   const persistDraft = () => {
-    if (step.slug === "reading") setAnswer(`${stepNumber}-reading`, readingAnswer);
+    if (step.slug === "reading")
+      setDayAnswer(currentDay, `${stepNumber}-reading`, readingAnswer);
     if (step.slug === "closing-prayer")
-      setAnswer(`${stepNumber}-closing`, closingAnswer);
+      setDayAnswer(currentDay, `${stepNumber}-closing`, closingAnswer);
     if (step.slug === "journal") {
-      setAnswer(`${stepNumber}-journal-0`, journalAnswers[0]);
-      setAnswer(`${stepNumber}-journal-1`, journalAnswers[1]);
+      setDayAnswer(currentDay, `${stepNumber}-journal-0`, journalAnswers[0]);
+      setDayAnswer(currentDay, `${stepNumber}-journal-1`, journalAnswers[1]);
     }
   };
 
