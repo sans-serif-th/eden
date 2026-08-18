@@ -1,10 +1,13 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { TOTAL_STEPS } from "./data/stepDefinitions";
+import type { StartPreference } from "./data/onboarding";
 
 export interface OnboardingAnswers {
   preferredTime: string; // "HH:mm"
   preferredPlace: string;
   preferredDurationMinutes: number;
+  startPreference: StartPreference;
+  customStartDate: string; // "YYYY-MM-DD", only meaningful when startPreference === "custom"
 }
 
 type DevotionState = {
@@ -33,6 +36,8 @@ const defaultOnboarding: OnboardingAnswers = {
   preferredTime: "06:00",
   preferredPlace: "บ้าน",
   preferredDurationMinutes: 15,
+  startPreference: "today",
+  customStartDate: "",
 };
 
 export function AppStateProvider({ children }: { children: ReactNode }) {
