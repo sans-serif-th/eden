@@ -2,7 +2,7 @@ import { ChevronRight } from "lucide-react";
 import { ScreenShell } from "../components/ScreenShell";
 import { ProgressBar } from "../components/ProgressBar";
 import { BottomNav } from "../components/BottomNav";
-import { currentBook, history } from "../data/lessonSteps";
+import { currentBook, history } from "../data/books";
 
 export function HistoryPage() {
   const completed = history.length;
@@ -13,7 +13,7 @@ export function HistoryPage() {
         <div className="flex flex-1 flex-col gap-3 px-6 py-4">
           <h1 className="text-[26px] font-semibold text-ink">ประวัติของฉัน</h1>
           <p className="text-sm font-medium text-brand-accent">
-            {currentBook.shortTitle}
+            {currentBook.title}
           </p>
 
           <div className="flex flex-col gap-3 rounded-[18px] bg-surface-tint px-[18px] py-4">

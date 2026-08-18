@@ -4,7 +4,8 @@ import { ScreenHeader } from "../components/ScreenHeader";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { ProgressBar } from "../components/ProgressBar";
 import { BottomNav } from "../components/BottomNav";
-import { currentBook, lessonSteps, TOTAL_STEPS } from "../data/lessonSteps";
+import { currentBook } from "../data/books";
+import { STEP_DEFINITIONS, TOTAL_STEPS } from "../data/stepDefinitions";
 import { useAppState } from "../AppState";
 
 export function TodayPage() {
@@ -13,7 +14,7 @@ export function TodayPage() {
 
   const notStarted = currentStep === 0;
   const doneToday = currentStep > TOTAL_STEPS;
-  const activeStep = lessonSteps[Math.min(currentStep, TOTAL_STEPS) - 1];
+  const activeStep = STEP_DEFINITIONS[Math.min(currentStep, TOTAL_STEPS) - 1];
 
   const ctaLabel = notStarted ? "เริ่มเฝ้าเดี่ยว" : doneToday ? "ดูสรุปวันนี้" : "ทำต่อ";
 
@@ -38,7 +39,7 @@ export function TodayPage() {
             สวัสดี, วันนี้พร้อมไหม
           </h1>
           <p className="text-sm font-medium text-brand-accent">
-            {currentBook.shortTitle} &nbsp;•&nbsp; วันที่ {currentDay} จาก {totalDays}
+            {currentBook.title} &nbsp;•&nbsp; วันที่ {currentDay} จาก {totalDays}
           </p>
 
           <div className="flex flex-col gap-3 rounded-[22px] bg-surface p-5 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.06)]">
@@ -48,7 +49,7 @@ export function TodayPage() {
             {notStarted ? (
               <>
                 <p className="text-[21px] font-semibold text-ink">
-                  {lessonSteps[0].title}
+                  {STEP_DEFINITIONS[0].title}
                 </p>
                 <p className="text-sm text-ink-muted">ยังไม่เริ่มบทเรียนวันนี้</p>
               </>

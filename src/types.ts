@@ -1,16 +1,21 @@
-export interface LessonStep {
+export type StepKind = "template" | "authored";
+
+export interface StepDefinition {
   order: number;
   slug: string;
   title: string;
-  contentLabel: string;
-  contentTitle?: string;
-  contentBody: string;
-  tinted?: boolean;
-  helperText?: string;
-  privateField?: {
-    label: string;
-    placeholder: string;
-    footerNote?: string;
-  };
+  kind: StepKind;
   buttonLabel: string;
+}
+
+export interface DayContent {
+  day: number;
+  book: number;
+  citation: string;
+  scriptureReference: string;
+  memoryVerse: string;
+  reading: { teaser: string };
+  understanding: { question: string; explanation: string };
+  reflection: string;
+  closingPrayer: string;
 }

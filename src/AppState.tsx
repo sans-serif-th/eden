@@ -1,14 +1,14 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
-import { TOTAL_STEPS } from "./data/lessonSteps";
+import { TOTAL_STEPS } from "./data/stepDefinitions";
 
 type DevotionState = {
   bookSelected: boolean;
   currentDay: number;
   totalDays: number;
   currentStep: number; // 0 = not started, 1..TOTAL_STEPS = in progress, TOTAL_STEPS+1 = done today
-  answers: Record<number, string>;
+  answers: Record<string, string>;
   selectBook: () => void;
-  setAnswer: (step: number, value: string) => void;
+  setAnswer: (key: string, value: string) => void;
   completeStep: (step: number) => void;
 };
 
@@ -16,14 +16,14 @@ const AppStateContext = createContext<DevotionState | null>(null);
 
 export function AppStateProvider({ children }: { children: ReactNode }) {
   const [bookSelected, setBookSelected] = useState(false);
-  const [currentDay] = useState(4);
+  const [currentDay] = useState(1);
   const [currentStep, setCurrentStep] = useState(0);
-  const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [answers, setAnswers] = useState<Record<string, string>>({});
 
   const value: DevotionState = {
     bookSelected,
     currentDay,
-    totalDays: 30,
+    totalDays: 366, // Year 1's Personal Calendar length (12 Books, leap-year edition)
     currentStep,
     answers,
     selectBook: () => setBookSelected(true),
