@@ -2,15 +2,15 @@ import { useNavigate } from "react-router-dom";
 import { ScreenShell } from "../components/ScreenShell";
 import { ScreenHeader } from "../components/ScreenHeader";
 import { PrimaryButton } from "../components/PrimaryButton";
-import { currentBook, levels } from "../data/books";
+import { getBook, levels } from "../data/books";
 import { useAppState } from "../AppState";
 
 export function SelectBookPage() {
   const navigate = useNavigate();
-  const { selectBook, pendingLevel, activeEnrollment } = useAppState();
-  const levelLabel = levels.find(
-    (l) => l.value === (pendingLevel ?? activeEnrollment.level),
-  )?.label;
+  const { selectBook, pendingEnrollment, activeEnrollment } = useAppState();
+  const targetLevel = pendingEnrollment?.level ?? activeEnrollment.level;
+  const levelLabel = levels.find((l) => l.value === targetLevel)?.label;
+  const book = getBook(targetLevel, 1);
 
   return (
     <ScreenShell>
@@ -38,23 +38,26 @@ export function SelectBookPage() {
             </span>
             <div className="flex flex-col gap-2 rounded-[18px] border-2 border-brand-accent bg-surface p-[18px]">
               <p className="text-[18px] font-semibold text-ink">
-                {currentBook.title}
+                {book?.title ?? "—"}
               </p>
               <p className="text-[16px] text-ink-muted">
-                {currentBook.description}
+                {book?.description ?? "ยังไม่มีเนื้อหาสำหรับระดับนี้"}
               </p>
-              <p className="text-[16px] font-medium text-brand-accent">
-                0 / {currentBook.totalDays} วัน
-              </p>
+              {book && (
+                <p className="text-[16px] font-medium text-brand-accent">
+                  0 / {book.totalDays} วัน
+                </p>
+              )}
             </div>
           </div>
         </div>
 
         <div className="flex flex-col gap-3 p-6">
           <PrimaryButton
+            disabled={!book}
             onClick={() => {
               selectBook();
-              navigate(pendingLevel ? "/new-plan" : "/today");
+              navigate(pendingEnrollment ? "/new-plan" : "/today");
             }}
           >
             เลือกเล่มนี้

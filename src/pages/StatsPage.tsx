@@ -5,7 +5,7 @@ import { BottomNav } from "../components/BottomNav";
 import { OptionGroup } from "../components/OptionGroup";
 import { BottomSheet } from "../components/BottomSheet";
 import { PrimaryButton } from "../components/PrimaryButton";
-import { currentBook, levels } from "../data/books";
+import { getBook, levels } from "../data/books";
 import {
   startOptions,
   formatThaiDateShort,
@@ -18,9 +18,11 @@ export function StatsPage() {
   const [isEditingPlan, setIsEditingPlan] = useState(false);
 
   const level = levels.find((l) => l.value === activeEnrollment.level);
+  const book = getBook(activeEnrollment.level, activeEnrollment.book);
+  const totalDays = book?.totalDays ?? 0;
   const dayRecords = Object.values(activeEnrollment.dayRecords);
   const daysStudied = dayRecords.filter((r) => r.status === "done").length;
-  const percent = (daysStudied / currentBook.totalDays) * 100;
+  const percent = totalDays > 0 ? (daysStudied / totalDays) * 100 : 0;
 
   const totalLogs = dayRecords
     .flatMap((r) => Object.values(r.answers))
@@ -31,7 +33,7 @@ export function StatsPage() {
     activeEnrollment.customStartDate,
   );
   const endDate = new Date(startDate);
-  endDate.setDate(endDate.getDate() + currentBook.totalDays - 1);
+  endDate.setDate(endDate.getDate() + totalDays - 1);
 
   return (
     <ScreenShell>
@@ -44,7 +46,7 @@ export function StatsPage() {
               กำลังเรียนอยู่
             </p>
             <p className="text-[19px] font-semibold text-ink">
-              {level?.label ?? "—"} &middot; {currentBook.title}
+              {level?.label ?? "—"} &middot; {book?.title ?? "—"}
             </p>
 
             <div className="mt-2 flex flex-col gap-2 border-t border-hairline pt-3">
@@ -108,7 +110,7 @@ export function StatsPage() {
               ความคืบหน้า
             </p>
             <p className="text-[19px] font-semibold text-ink">
-              เรียนมาแล้ว {daysStudied} จาก {currentBook.totalDays} วัน
+              เรียนมาแล้ว {daysStudied} จาก {totalDays} วัน
             </p>
             <ProgressBar percent={percent} thick />
             <p className="text-[16px] font-medium text-brand-accent">

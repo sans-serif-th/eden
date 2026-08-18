@@ -21,6 +21,7 @@ export interface DayRecord {
 
 export interface Enrollment {
   level: string;
+  book: number; // which Book within the Level this Enrollment is studying
   startPreference: StartPreference;
   customStartDate: string;
   startedAt: string; // ISO date this Enrollment was created, for the archive list
@@ -31,12 +32,20 @@ export interface Enrollment {
   dayRecords: Record<number, DayRecord>;
 }
 
+// A Level/Book combination awaiting a new start date, via either a Level
+// switch (book always resets to 1) or finishing a Book and moving to the
+// next one (or skipping past it) within the same Level.
+export interface PendingEnrollment {
+  level: string;
+  book: number;
+}
+
 type DevotionState = {
   onboardingComplete: boolean;
   onboarding: OnboardingAnswers;
   activeEnrollment: Enrollment;
   pastEnrollments: Enrollment[];
-  pendingLevel: string | null; // set while switching Level/Book, awaiting a new start date
+  pendingEnrollment: PendingEnrollment | null;
   bookSelected: boolean;
   currentDay: number;
   totalDays: number;
@@ -51,11 +60,13 @@ type DevotionState = {
     customStartDate: string,
   ) => void;
   requestLevelSwitch: (level: string) => void;
-  confirmLevelSwitch: (
+  requestNextBook: (skip: boolean) => void;
+  skipPendingBook: () => void;
+  confirmPendingEnrollment: (
     startPreference: StartPreference,
     customStartDate: string,
   ) => void;
-  cancelLevelSwitch: () => void;
+  cancelPendingEnrollment: () => void;
   selectBook: () => void;
   setDayAnswer: (day: number, key: string, value: string) => void;
   completeStep: (day: number, step: number) => void;
@@ -71,6 +82,7 @@ const defaultOnboarding: OnboardingAnswers = {
 
 const defaultEnrollment: Enrollment = {
   level: "year-1",
+  book: 1,
   startPreference: "today",
   customStartDate: "",
   startedAt: new Date().toISOString(),
@@ -84,7 +96,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [activeEnrollment, setActiveEnrollment] =
     useState<Enrollment>(defaultEnrollment);
   const [pastEnrollments, setPastEnrollments] = useState<Enrollment[]>([]);
-  const [pendingLevel, setPendingLevel] = useState<string | null>(null);
+  const [pendingEnrollment, setPendingEnrollment] =
+    useState<PendingEnrollment | null>(null);
   const [bookSelected, setBookSelected] = useState(false);
   const currentDay = Math.max(
     1,
@@ -100,7 +113,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     onboarding,
     activeEnrollment,
     pastEnrollments,
-    pendingLevel,
+    pendingEnrollment,
     bookSelected,
     currentDay,
     totalDays: 366, // Year 1's Personal Calendar length (12 Books, leap-year edition)
@@ -117,23 +130,35 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       })),
     requestLevelSwitch: (level) => {
       if (level === activeEnrollment.level) return;
-      setPendingLevel(level);
+      setPendingEnrollment({ level, book: 1 });
     },
-    confirmLevelSwitch: (startPreference, customStartDate) => {
-      if (!pendingLevel) return;
+    requestNextBook: (skip) => {
+      setPendingEnrollment({
+        level: activeEnrollment.level,
+        book: activeEnrollment.book + (skip ? 2 : 1),
+      });
+    },
+    skipPendingBook: () => {
+      setPendingEnrollment((prev) =>
+        prev ? { ...prev, book: prev.book + 1 } : prev,
+      );
+    },
+    confirmPendingEnrollment: (startPreference, customStartDate) => {
+      if (!pendingEnrollment) return;
       setPastEnrollments((prev) => [...prev, activeEnrollment]);
       setActiveEnrollment({
-        level: pendingLevel,
+        level: pendingEnrollment.level,
+        book: pendingEnrollment.book,
         startPreference,
         customStartDate,
         startedAt: new Date().toISOString(),
         dayRecords: {},
       });
-      setPendingLevel(null);
+      setPendingEnrollment(null);
       // A new Enrollment starts its own journey — the old plan's dayRecords
       // stay behind on the archived Enrollment, untouched.
     },
-    cancelLevelSwitch: () => setPendingLevel(null),
+    cancelPendingEnrollment: () => setPendingEnrollment(null),
     selectBook: () => setBookSelected(true),
     setDayAnswer: (day, key, val) =>
       setActiveEnrollment((prev) => ({

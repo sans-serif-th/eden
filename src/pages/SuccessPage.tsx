@@ -2,16 +2,17 @@ import { Check } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ScreenShell } from "../components/ScreenShell";
 import { OutlineButton, PrimaryButton } from "../components/PrimaryButton";
-import { currentBook } from "../data/books";
+import { getBook } from "../data/books";
 import { useAppState } from "../AppState";
 
 export function SuccessPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { currentDay, totalDays } = useAppState();
+  const { currentDay, totalDays, activeEnrollment } = useAppState();
 
   const day = (location.state as { day?: number } | null)?.day ?? currentDay;
   const isToday = day === currentDay;
+  const book = getBook(activeEnrollment.level, activeEnrollment.book);
 
   return (
     <ScreenShell>
@@ -30,7 +31,7 @@ export function SuccessPage() {
           </div>
           <div className="flex w-full flex-col gap-2.5 rounded-[18px] bg-surface p-[18px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.06)]">
             <p className="text-[16px] font-medium text-brand-accent">
-              {currentBook.title}
+              {book?.title ?? "—"}
             </p>
             <p className="text-[19px] font-semibold text-ink">
               วันที่ {day} จาก {totalDays}

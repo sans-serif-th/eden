@@ -7,8 +7,30 @@ export const levels = [
   { value: "year-5", label: "ปีที่ 5", enabled: false },
 ] as const;
 
-export const currentBook = {
-  title: "เล่มที่ 1",
-  description: "เรียนรู้ตามลำดับ วันละหนึ่งบทเรียน",
-  totalDays: 31, // Book 1's own length (มกราคม is the source citation month, not shown as primary label)
+export interface Book {
+  book: number;
+  title: string;
+  description: string;
+  totalDays: number;
+}
+
+export const booksByLevel: Record<string, Book[]> = {
+  "year-1": [
+    {
+      book: 1,
+      title: "เล่มที่ 1",
+      description: "เรียนรู้ตามลำดับ วันละหนึ่งบทเรียน",
+      totalDays: 31, // มกราคม
+    },
+    {
+      book: 2,
+      title: "เล่มที่ 2",
+      description: "เรียนรู้ตามลำดับ วันละหนึ่งบทเรียน",
+      totalDays: 29, // กุมภาพันธ์
+    },
+  ],
 };
+
+export function getBook(level: string, book: number): Book | undefined {
+  return booksByLevel[level]?.find((b) => b.book === book);
+}
