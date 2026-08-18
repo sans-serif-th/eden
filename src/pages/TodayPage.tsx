@@ -34,6 +34,20 @@ export function TodayPage() {
     else navigate(`/lesson/${currentDay}/${notStarted ? 1 : currentStep}`);
   };
 
+  const planStartDate = getPlanStartDate(
+    activeEnrollment.startPreference,
+    activeEnrollment.customStartDate,
+  );
+  const doneDates = new Set(
+    Object.entries(activeEnrollment.dayRecords)
+      .filter(([, record]) => record.status === "done")
+      .map(([day]) => {
+        const date = new Date(planStartDate);
+        date.setDate(date.getDate() + Number(day) - 1);
+        return date.toDateString();
+      }),
+  );
+
   const isToday = selectedDate.toDateString() === new Date().toDateString();
   const selectedDayNumber = getBookDayForDate(
     selectedDate,
@@ -57,7 +71,7 @@ export function TodayPage() {
         </div>
         <div className="px-6 pt-4">
           <WeekStrip
-            todayDone={doneToday}
+            doneDates={doneDates}
             selectedDate={selectedDate}
             onSelectDate={setSelectedDate}
           />
@@ -77,13 +91,7 @@ export function TodayPage() {
                   แผนการเฝ้าเดี่ยวของคุณยังไม่เริ่ม
                 </p>
                 <p className="text-[16px] text-ink-muted">
-                  แผนจะเริ่มวันที่{" "}
-                  {formatThaiDateShort(
-                    getPlanStartDate(
-                      activeEnrollment.startPreference,
-                      activeEnrollment.customStartDate,
-                    ),
-                  )}
+                  แผนจะเริ่มวันที่ {formatThaiDateShort(planStartDate)}
                 </p>
               </div>
             ) : (
@@ -154,16 +162,9 @@ export function TodayPage() {
                 <p className="text-[16px] text-ink-muted">ยังไม่มีเนื้อหาสำหรับวันนี้</p>
               )}
               <OutlineButton
-                onClick={() =>
-                  setSelectedDate(
-                    getPlanStartDate(
-                      activeEnrollment.startPreference,
-                      activeEnrollment.customStartDate,
-                    ),
-                  )
-                }
+                onClick={() => setSelectedDate(new Date())}
               >
-                ไปที่วันเริ่มต้น
+                ไปที่วันนี้
               </OutlineButton>
             </div>
           )}
