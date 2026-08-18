@@ -1,4 +1,4 @@
-import { Zap } from "lucide-react";
+import { Sprout } from "lucide-react";
 
 const DAY_LABELS = ["จ", "อ", "พ", "พฤ", "ศ", "ส", "อา"]; // Mon..Sun
 const MONTH_LABELS = [
@@ -95,7 +95,7 @@ export function WeekStrip({
                 }`}
               >
                 {isToday && todayDone ? (
-                  <Zap size={16} strokeWidth={2.5} />
+                  <Sprout size={16} strokeWidth={2.5} />
                 ) : (
                   date.getDate()
                 )}
