@@ -10,7 +10,7 @@ import {
   placeOptions,
   startOptions,
 } from "../data/onboarding";
-import { currentBook, levels } from "../data/books";
+import { getBook, levels } from "../data/books";
 import { useAppState } from "../AppState";
 
 export function OnboardingPage() {
@@ -28,6 +28,8 @@ export function OnboardingPage() {
   const stepNumber = Number(stepParam);
   if (!stepNumber || stepNumber < 1 || stepNumber > ONBOARDING_TOTAL_STEPS)
     return null;
+
+  const onboardingBook = getBook(activeEnrollment.level, 1);
 
   const handleContinue = () => {
     if (stepNumber >= ONBOARDING_TOTAL_STEPS) {
@@ -141,14 +143,16 @@ export function OnboardingPage() {
                 </p>
                 <div className="flex flex-col gap-2 rounded-[18px] border-2 border-brand-accent bg-surface p-[18px]">
                   <p className="text-[18px] font-semibold text-ink">
-                    {currentBook.title}
+                    {onboardingBook?.title ?? "—"}
                   </p>
                   <p className="text-[16px] text-ink-muted">
-                    {currentBook.description}
+                    {onboardingBook?.description ?? "ยังไม่มีเนื้อหาสำหรับระดับนี้"}
                   </p>
-                  <p className="text-[16px] font-medium text-brand-accent">
-                    0 / {currentBook.totalDays} วัน
-                  </p>
+                  {onboardingBook && (
+                    <p className="text-[16px] font-medium text-brand-accent">
+                      0 / {onboardingBook.totalDays} วัน
+                    </p>
+                  )}
                 </div>
               </>
             )}

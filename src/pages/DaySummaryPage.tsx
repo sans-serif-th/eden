@@ -43,7 +43,11 @@ export function DaySummaryPage() {
   const { activeEnrollment } = useAppState();
 
   const day = Number(dayParam);
-  const dayContent = getDayContent(day);
+  const dayContent = getDayContent(
+    activeEnrollment.level,
+    activeEnrollment.book,
+    day,
+  );
   const record = activeEnrollment.dayRecords[day];
   const answers = record?.answers ?? {};
 

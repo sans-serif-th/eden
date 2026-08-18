@@ -8,7 +8,7 @@ import { LevelBookSwitcher } from "../components/LevelBookSwitcher";
 import { WeekStrip } from "../components/WeekStrip";
 import { STEP_DEFINITIONS, TOTAL_STEPS } from "../data/stepDefinitions";
 import { getDayContent } from "../data/dayContent";
-import { currentBook } from "../data/books";
+import { getBook } from "../data/books";
 import {
   getBookDayForDate,
   getPlanStartDate,
@@ -19,12 +19,20 @@ import { useAppState } from "../AppState";
 
 export function TodayPage() {
   const navigate = useNavigate();
-  const { currentDay, activeEnrollment } = useAppState();
+  const { currentDay, activeEnrollment, requestNextBook } = useAppState();
   const [selectedDate, setSelectedDate] = useState(new Date());
+
+  const currentBookDef = getBook(activeEnrollment.level, activeEnrollment.book);
+  const totalDaysInBook = currentBookDef?.totalDays ?? Infinity;
+  const nextBookExists = !!getBook(
+    activeEnrollment.level,
+    activeEnrollment.book + 1,
+  );
 
   const currentStep = activeEnrollment.dayRecords[currentDay]?.currentStep ?? 0;
   const notStarted = currentStep === 0;
   const doneToday = currentStep > TOTAL_STEPS;
+  const bookFinished = currentDay > totalDaysInBook;
   const activeStep = STEP_DEFINITIONS[Math.min(currentStep, TOTAL_STEPS) - 1];
 
   const ctaLabel = notStarted ? "เริ่มเฝ้าเดี่ยว" : doneToday ? "ดูสรุปวันนี้" : "ทำต่อ";
@@ -32,6 +40,11 @@ export function TodayPage() {
   const handleCta = () => {
     if (doneToday) navigate("/success", { state: { day: currentDay } });
     else navigate(`/lesson/${currentDay}/${notStarted ? 1 : currentStep}`);
+  };
+
+  const handleStartNextBook = () => {
+    requestNextBook(false);
+    navigate("/new-plan");
   };
 
   const planStartDate = getPlanStartDate(
@@ -55,7 +68,7 @@ export function TodayPage() {
     activeEnrollment.customStartDate,
   );
   const selectedDayContent = !isToday
-    ? getDayContent(selectedDayNumber)
+    ? getDayContent(activeEnrollment.level, activeEnrollment.book, selectedDayNumber)
     : undefined;
 
   // currentDay from AppState clamps to a minimum of 1 for safe content lookup,
@@ -66,7 +79,10 @@ export function TodayPage() {
     <ScreenShell>
       <div className="flex flex-1 flex-col">
         <div className="flex items-center justify-between px-6 pt-4">
-          <LevelBookSwitcher selectedLevel={activeEnrollment.level} />
+          <LevelBookSwitcher
+            selectedLevel={activeEnrollment.level}
+            book={activeEnrollment.book}
+          />
           <div className="size-8 shrink-0 rounded-full bg-brand-soft" />
         </div>
         <div className="px-6 pt-4">
@@ -93,6 +109,27 @@ export function TodayPage() {
                 <p className="text-[16px] text-ink-muted">
                   แผนจะเริ่มวันที่ {formatThaiDateShort(planStartDate)}
                 </p>
+              </div>
+            ) : bookFinished ? (
+              <div className="flex flex-col gap-3 rounded-[22px] bg-surface p-5 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.06)]">
+                <p className="text-[16px] font-semibold text-brand-accent">
+                  จบเล่มนี้แล้ว!
+                </p>
+                <p className="text-[21px] font-semibold text-ink">
+                  {nextBookExists
+                    ? "พร้อมเริ่มเล่มถัดไปหรือยัง"
+                    : "ยังไม่มีเล่มถัดไปในตอนนี้"}
+                </p>
+                <p className="text-[16px] text-ink-muted">
+                  {nextBookExists
+                    ? "แผนเดิมจะถูกเก็บไว้ และเริ่มนับวันใหม่ในเล่มถัดไป"
+                    : "กรุณารอการอัปเดตเนื้อหาเล่มถัดไป"}
+                </p>
+                {nextBookExists && (
+                  <PrimaryButton onClick={handleStartNextBook}>
+                    เริ่มเล่มถัดไป
+                  </PrimaryButton>
+                )}
               </div>
             ) : (
               <div className="flex flex-col gap-3 rounded-[22px] bg-surface p-5 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.06)]">
@@ -145,7 +182,7 @@ export function TodayPage() {
                 <p className="text-[16px] text-ink-muted">
                   แผนการเฝ้าเดี่ยวของคุณยังไม่เริ่มในวันนี้
                 </p>
-              ) : selectedDayNumber > currentBook.totalDays ? (
+              ) : selectedDayNumber > totalDaysInBook ? (
                 <p className="text-[16px] text-ink-muted">
                   ยังไม่มีเนื้อหาสำหรับวันนี้
                 </p>
@@ -161,9 +198,7 @@ export function TodayPage() {
               ) : (
                 <p className="text-[16px] text-ink-muted">ยังไม่มีเนื้อหาสำหรับวันนี้</p>
               )}
-              <OutlineButton
-                onClick={() => setSelectedDate(new Date())}
-              >
+              <OutlineButton onClick={() => setSelectedDate(new Date())}>
                 ไปที่วันนี้
               </OutlineButton>
             </div>
@@ -171,7 +206,7 @@ export function TodayPage() {
         </div>
 
         <div className="flex flex-col gap-2 p-6">
-          {isToday && !planNotStartedYet && (
+          {isToday && !planNotStartedYet && !bookFinished && (
             <PrimaryButton onClick={handleCta}>{ctaLabel}</PrimaryButton>
           )}
           <BottomNav active="today" />

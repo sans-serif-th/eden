@@ -26,7 +26,11 @@ export function LessonStepPage() {
 
   const stepNumber = Number(stepParam);
   const step = STEP_DEFINITIONS[stepNumber - 1];
-  const dayContent = getDayContent(dayNumber);
+  const dayContent = getDayContent(
+    activeEnrollment.level,
+    activeEnrollment.book,
+    dayNumber,
+  );
 
   // Some Days skip ทำความเข้าใจพระคัมภีร์ entirely in the source — never
   // show a blank step 4, whichever direction the user arrived from.

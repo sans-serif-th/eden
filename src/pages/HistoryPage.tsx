@@ -4,7 +4,7 @@ import { ChevronRight, Sprout } from "lucide-react";
 import { ScreenShell } from "../components/ScreenShell";
 import { ProgressBar } from "../components/ProgressBar";
 import { BottomNav } from "../components/BottomNav";
-import { currentBook } from "../data/books";
+import { getBook } from "../data/books";
 import { getDayContent } from "../data/dayContent";
 import { getPlanStartDate } from "../data/onboarding";
 import { useAppState } from "../AppState";
@@ -37,12 +37,15 @@ export function HistoryPage() {
   const { activeEnrollment, currentDay } = useAppState();
   const [monthFilter, setMonthFilter] = useState("all");
 
+  const book = getBook(activeEnrollment.level, activeEnrollment.book);
+  const totalDays = book?.totalDays ?? 0;
+
   const startDate = getPlanStartDate(
     activeEnrollment.startPreference,
     activeEnrollment.customStartDate,
   );
 
-  const lastDay = Math.min(currentDay, currentBook.totalDays);
+  const lastDay = Math.min(currentDay, totalDays);
 
   const rows = useMemo(() => {
     const list = [];
@@ -55,11 +58,11 @@ export function HistoryPage() {
         date,
         done: record?.status === "done",
         resumeStep: record?.currentStep ?? 0,
-        content: getDayContent(day),
+        content: getDayContent(activeEnrollment.level, activeEnrollment.book, day),
       });
     }
     return list;
-  }, [lastDay, startDate, activeEnrollment.dayRecords]);
+  }, [lastDay, startDate, activeEnrollment.level, activeEnrollment.book, activeEnrollment.dayRecords]);
 
   const months = useMemo(() => {
     const seen = new Map<string, Date>();
@@ -78,7 +81,7 @@ export function HistoryPage() {
   const daysStudied = Object.values(activeEnrollment.dayRecords).filter(
     (r) => r.status === "done",
   ).length;
-  const percent = (daysStudied / currentBook.totalDays) * 100;
+  const percent = totalDays > 0 ? (daysStudied / totalDays) * 100 : 0;
 
   const handleRowClick = (row: (typeof rows)[number]) => {
     if (row.done) navigate(`/history/${row.day}`);
@@ -91,12 +94,12 @@ export function HistoryPage() {
         <div className="flex flex-1 flex-col gap-3 px-6 py-4">
           <h1 className="text-[26px] font-semibold text-ink">ประวัติของฉัน</h1>
           <p className="text-[16px] font-medium text-brand-accent">
-            {currentBook.title}
+            {book?.title ?? "—"}
           </p>
 
           <div className="flex flex-col gap-3 rounded-[18px] bg-surface-tint px-[18px] py-4">
             <p className="text-[17px] font-semibold text-ink">
-              ทำแล้ว {daysStudied} จาก {currentBook.totalDays} บทเรียน
+              ทำแล้ว {daysStudied} จาก {totalDays} บทเรียน
             </p>
             <ProgressBar percent={percent} thick />
           </div>

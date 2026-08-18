@@ -1,5 +1,6 @@
 import type { DayContent } from "../types";
 import book01Raw from "./content/book-01.json";
+import book02Raw from "./content/book-02.json";
 
 interface RawDay {
   day: number;
@@ -30,18 +31,32 @@ function toDayContent(raw: RawDay, book: number): DayContent {
   };
 }
 
-export const book1Days: DayContent[] = (book01Raw as RawDay[]).map((d) =>
+const book1Days: DayContent[] = (book01Raw as RawDay[]).map((d) =>
   toDayContent(d, 1),
 );
+const book2Days: DayContent[] = (book02Raw as RawDay[]).map((d) =>
+  toDayContent(d, 2),
+);
 
-export function getDayContent(day: number): DayContent | undefined {
-  return book1Days.find((d) => d.day === day);
+const CONTENT_BY_LEVEL_BOOK: Record<string, Record<number, DayContent[]>> = {
+  "year-1": {
+    1: book1Days,
+    2: book2Days,
+  },
+};
+
+export function getDayContent(
+  level: string,
+  book: number,
+  day: number,
+): DayContent | undefined {
+  return CONTENT_BY_LEVEL_BOOK[level]?.[book]?.find((d) => d.day === day);
 }
 
 // A Day has real ทำความเข้าใจพระคัมภีร์ content only when the source book
-// actually included that section — 8 of Book 1's 31 Days go straight from
-// the reading into ข้อคิดและการตอบสนอง instead. The UI should skip step 4
-// entirely for those Days rather than show a blank section.
+// actually included that section — some Days go straight from the reading
+// into ข้อคิดและการตอบสนอง instead. The UI should skip step 4 entirely for
+// those Days rather than show a blank section.
 export function hasUnderstandingStep(day: DayContent): boolean {
   return day.understanding.question.trim().length > 0;
 }

@@ -1,10 +1,17 @@
 import { ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { currentBook, levels } from "../data/books";
+import { getBook, levels } from "../data/books";
 
-export function LevelBookSwitcher({ selectedLevel }: { selectedLevel: string }) {
+export function LevelBookSwitcher({
+  selectedLevel,
+  book,
+}: {
+  selectedLevel: string;
+  book: number;
+}) {
   const navigate = useNavigate();
   const level = levels.find((l) => l.value === selectedLevel);
+  const bookDef = getBook(selectedLevel, book);
 
   return (
     <button
@@ -14,7 +21,7 @@ export function LevelBookSwitcher({ selectedLevel }: { selectedLevel: string }) 
     >
       <span>{level?.label ?? "เลือกระดับ"}</span>
       <span className="text-ink-faint">·</span>
-      <span>{currentBook.title}</span>
+      <span>{bookDef?.title ?? "—"}</span>
       <ChevronDown size={14} className="text-ink-faint" />
     </button>
   );
