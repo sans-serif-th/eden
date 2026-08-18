@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AppStateProvider, useAppState } from "./AppState";
+import { LoginPage } from "./pages/LoginPage";
 import { OnboardingPage } from "./pages/OnboardingPage";
 import { SelectLevelPage } from "./pages/SelectLevelPage";
 import { SelectBookPage } from "./pages/SelectBookPage";
@@ -27,6 +28,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<RootRoute />} />
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/onboarding/:step" element={<OnboardingPage />} />
           <Route path="/select-book" element={<SelectBookPage />} />
           <Route path="/new-plan" element={<NewPlanPage />} />
