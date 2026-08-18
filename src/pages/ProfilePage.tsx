@@ -1,4 +1,4 @@
-import { ChevronRight, Settings } from "lucide-react";
+import { ChevronRight, LogOut, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ScreenShell } from "../components/ScreenShell";
 import { BottomNav } from "../components/BottomNav";
@@ -30,6 +30,17 @@ export function ProfilePage() {
               <ChevronRight size={18} className="text-ink-faint" />
             </button>
           </div>
+
+          <button
+            type="button"
+            onClick={() => navigate("/login")}
+            className="flex items-center gap-3 rounded-2xl border border-fieldline bg-surface px-4 py-3.5 text-left"
+          >
+            <LogOut size={20} className="text-red-600" />
+            <span className="flex-1 text-[16px] font-medium text-red-600">
+              ออกจากระบบ
+            </span>
+          </button>
         </div>
 
         <div className="p-6">
