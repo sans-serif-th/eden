@@ -5,7 +5,7 @@ type NavKey = "today" | "books" | "history" | "profile";
 
 const items: { key: NavKey; label: string; icon: typeof Home; to?: string }[] = [
   { key: "today", label: "วันนี้", icon: Home, to: "/today" },
-  { key: "books", label: "เล่มของฉัน", icon: BookOpen },
+  { key: "books", label: "เล่มของฉัน", icon: BookOpen, to: "/stats" },
   { key: "history", label: "ประวัติ", icon: History, to: "/history" },
   { key: "profile", label: "โปรไฟล์", icon: User, to: "/profile" },
 ];
