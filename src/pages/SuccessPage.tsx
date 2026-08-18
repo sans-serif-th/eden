@@ -2,7 +2,7 @@ import { Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ScreenShell } from "../components/ScreenShell";
 import { OutlineButton, PrimaryButton } from "../components/PrimaryButton";
-import { currentBook } from "../data/lessonSteps";
+import { currentBook } from "../data/books";
 import { useAppState } from "../AppState";
 
 export function SuccessPage() {
@@ -26,7 +26,7 @@ export function SuccessPage() {
           </div>
           <div className="flex w-full flex-col gap-2.5 rounded-[18px] bg-surface p-[18px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.06)]">
             <p className="text-sm font-medium text-brand-accent">
-              {currentBook.shortTitle}
+              {currentBook.title}
             </p>
             <p className="text-[19px] font-semibold text-ink">
               วันที่ {currentDay} จาก {totalDays}
