@@ -12,7 +12,3 @@ export const currentBook = {
   description: "เรียนรู้ตามลำดับ วันละหนึ่งบทเรียน",
   totalDays: 31, // Book 1's own length (มกราคม is the source citation month, not shown as primary label)
 };
-
-export const history = [
-  { day: 1, status: "เสร็จสิ้นแล้ว", label: "วันนี้" },
-];

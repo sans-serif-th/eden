@@ -9,6 +9,7 @@ import { TodayPage } from "./pages/TodayPage";
 import { LessonStepPage } from "./pages/LessonStepPage";
 import { SuccessPage } from "./pages/SuccessPage";
 import { HistoryPage } from "./pages/HistoryPage";
+import { DaySummaryPage } from "./pages/DaySummaryPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { StatsPage } from "./pages/StatsPage";
@@ -33,9 +34,10 @@ export default function App() {
           <Route path="/select-book" element={<SelectBookPage />} />
           <Route path="/new-plan" element={<NewPlanPage />} />
           <Route path="/today" element={<TodayPage />} />
-          <Route path="/lesson/:step" element={<LessonStepPage />} />
+          <Route path="/lesson/:day/:step" element={<LessonStepPage />} />
           <Route path="/success" element={<SuccessPage />} />
           <Route path="/history" element={<HistoryPage />} />
+          <Route path="/history/:day" element={<DaySummaryPage />} />
           <Route path="/stats" element={<StatsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/settings" element={<SettingsPage />} />

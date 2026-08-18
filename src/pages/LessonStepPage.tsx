@@ -15,28 +15,33 @@ import { useAppState } from "../AppState";
 const UNDERSTANDING_STEP = 4;
 
 export function LessonStepPage() {
-  const { step: stepParam } = useParams();
+  const { day: dayParam, step: stepParam } = useParams();
   const navigate = useNavigate();
   const { currentDay, activeEnrollment, setDayAnswer, completeStep } =
     useAppState();
-  const answers = activeEnrollment.dayRecords[currentDay]?.answers ?? {};
+
+  const dayNumber = Number(dayParam);
+  const isToday = dayNumber === currentDay;
+  const answers = activeEnrollment.dayRecords[dayNumber]?.answers ?? {};
 
   const stepNumber = Number(stepParam);
   const step = STEP_DEFINITIONS[stepNumber - 1];
-  const day = getDayContent(currentDay);
+  const dayContent = getDayContent(dayNumber);
 
   // Some Days skip ทำความเข้าใจพระคัมภีร์ entirely in the source — never
   // show a blank step 4, whichever direction the user arrived from.
   useEffect(() => {
     if (
-      day &&
+      dayContent &&
       stepNumber === UNDERSTANDING_STEP &&
-      !hasUnderstandingStep(day)
+      !hasUnderstandingStep(dayContent)
     ) {
-      navigate(`/lesson/${UNDERSTANDING_STEP + 1}`, { replace: true });
+      navigate(`/lesson/${dayNumber}/${UNDERSTANDING_STEP + 1}`, {
+        replace: true,
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stepNumber, day]);
+  }, [dayNumber, stepNumber, dayContent]);
 
   const [readingAnswer, setReadingAnswer] = useState(
     answers[`${stepNumber}-reading`] ?? "",
@@ -49,40 +54,40 @@ export function LessonStepPage() {
     answers[`${stepNumber}-journal-1`] ?? "",
   ]);
 
-  if (!step || !day) return null;
+  if (!step || !dayContent) return null;
 
   const persistDraft = () => {
     if (step.slug === "reading")
-      setDayAnswer(currentDay, `${stepNumber}-reading`, readingAnswer);
+      setDayAnswer(dayNumber, `${stepNumber}-reading`, readingAnswer);
     if (step.slug === "closing-prayer")
-      setDayAnswer(currentDay, `${stepNumber}-closing`, closingAnswer);
+      setDayAnswer(dayNumber, `${stepNumber}-closing`, closingAnswer);
     if (step.slug === "journal") {
-      setDayAnswer(currentDay, `${stepNumber}-journal-0`, journalAnswers[0]);
-      setDayAnswer(currentDay, `${stepNumber}-journal-1`, journalAnswers[1]);
+      setDayAnswer(dayNumber, `${stepNumber}-journal-0`, journalAnswers[0]);
+      setDayAnswer(dayNumber, `${stepNumber}-journal-1`, journalAnswers[1]);
     }
   };
 
   const handleContinue = () => {
     persistDraft();
-    completeStep(stepNumber);
+    completeStep(dayNumber, stepNumber);
     if (stepNumber >= TOTAL_STEPS) {
-      navigate("/success");
+      navigate("/success", { state: { day: dayNumber } });
       return;
     }
     let next = stepNumber + 1;
-    if (next === UNDERSTANDING_STEP && day && !hasUnderstandingStep(day)) {
+    if (next === UNDERSTANDING_STEP && !hasUnderstandingStep(dayContent)) {
       next += 1;
     }
-    navigate(`/lesson/${next}`);
+    navigate(`/lesson/${dayNumber}/${next}`);
   };
 
   const handleBack = () => {
     persistDraft();
     let prev = stepNumber - 1;
-    if (prev === UNDERSTANDING_STEP && day && !hasUnderstandingStep(day)) {
+    if (prev === UNDERSTANDING_STEP && !hasUnderstandingStep(dayContent)) {
       prev -= 1;
     }
-    navigate(`/lesson/${prev}`);
+    navigate(`/lesson/${dayNumber}/${prev}`);
   };
 
   return (
@@ -90,13 +95,18 @@ export function LessonStepPage() {
       <div className="flex h-dvh flex-col">
         <div className="flex-1 overflow-y-auto px-6 pt-11 pb-32">
           <div className="flex flex-col gap-4">
-            <StepHeader step={stepNumber} total={TOTAL_STEPS} />
+            <StepHeader
+              step={stepNumber}
+              total={TOTAL_STEPS}
+              backTo={isToday ? "/today" : "/history"}
+              backLabel={isToday ? "วันนี้" : "ประวัติ"}
+            />
 
             <h1 className="text-[25px] font-semibold text-ink">
               {step.title}
             </h1>
             <p className="text-[16px] font-medium text-brand-accent">
-              {day.citation}
+              {dayContent.citation}
             </p>
 
             <ProgressBar percent={(stepNumber / TOTAL_STEPS) * 100} />
@@ -117,7 +127,9 @@ export function LessonStepPage() {
                 <p className="text-[16px] font-semibold text-brand-accent">
                   ภาวนาพระวจนะ
                 </p>
-                <p className="text-[16px] text-ink-muted">{day.memoryVerse}</p>
+                <p className="text-[16px] text-ink-muted">
+                  {dayContent.memoryVerse}
+                </p>
               </div>
             )}
 
@@ -125,10 +137,10 @@ export function LessonStepPage() {
               <>
                 <div className="flex flex-col gap-2.5 rounded-[18px] bg-surface-tint p-[18px]">
                   <p className="text-[16px] font-semibold text-brand-accent">
-                    อ่านพระธรรม {day.scriptureReference}
+                    อ่านพระธรรม {dayContent.scriptureReference}
                   </p>
                   <p className="text-[16px] text-ink-muted">
-                    {day.reading.teaser}
+                    {dayContent.reading.teaser}
                   </p>
                 </div>
                 <p className="text-[16px] font-semibold text-ink">
@@ -149,10 +161,10 @@ export function LessonStepPage() {
                   ทำความเข้าใจพระคัมภีร์ตอนนี้
                 </p>
                 <p className="text-[16px] font-medium text-ink">
-                  {day.understanding.question}
+                  {dayContent.understanding.question}
                 </p>
                 <ul className="flex flex-col gap-2.5">
-                  {day.understanding.explanation.map((point, i) => (
+                  {dayContent.understanding.explanation.map((point, i) => (
                     <li key={i} className="flex gap-2.5 text-[16px] text-ink-muted">
                       <span
                         aria-hidden
@@ -170,7 +182,9 @@ export function LessonStepPage() {
                 <p className="text-[16px] font-semibold text-brand-accent">
                   ข้อคิดและการตอบสนอง
                 </p>
-                <p className="text-[16px] text-ink-muted">{day.reflection}</p>
+                <p className="text-[16px] text-ink-muted">
+                  {dayContent.reflection}
+                </p>
               </div>
             )}
 
@@ -202,7 +216,7 @@ export function LessonStepPage() {
                     อธิษฐาน
                   </p>
                   <p className="text-[16px] text-ink-muted">
-                    {day.closingPrayer}
+                    {dayContent.closingPrayer}
                   </p>
                 </div>
                 <textarea

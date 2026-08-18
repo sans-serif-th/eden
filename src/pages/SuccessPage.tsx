@@ -1,5 +1,5 @@
 import { Check } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ScreenShell } from "../components/ScreenShell";
 import { OutlineButton, PrimaryButton } from "../components/PrimaryButton";
 import { currentBook } from "../data/books";
@@ -7,7 +7,11 @@ import { useAppState } from "../AppState";
 
 export function SuccessPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { currentDay, totalDays } = useAppState();
+
+  const day = (location.state as { day?: number } | null)?.day ?? currentDay;
+  const isToday = day === currentDay;
 
   return (
     <ScreenShell>
@@ -18,7 +22,7 @@ export function SuccessPage() {
           </div>
           <div className="flex flex-col items-center gap-2 text-center">
             <h1 className="text-[27px] font-semibold text-ink">
-              เสร็จสิ้นวันนี้แล้ว
+              {isToday ? "เสร็จสิ้นวันนี้แล้ว" : `เสร็จสิ้นวันที่ ${day} แล้ว`}
             </h1>
             <p className="text-[16px] text-ink-muted">
               บันทึกและความคืบหน้าของคุณถูกเก็บเรียบร้อย
@@ -29,10 +33,12 @@ export function SuccessPage() {
               {currentBook.title}
             </p>
             <p className="text-[19px] font-semibold text-ink">
-              วันที่ {currentDay} จาก {totalDays}
+              วันที่ {day} จาก {totalDays}
             </p>
             <p className="text-[16px] text-ink-muted">
-              บทเรียนถัดไปจะพร้อมในวันถัดไป
+              {isToday
+                ? "บทเรียนถัดไปจะพร้อมในวันถัดไป"
+                : "กลับไปที่ประวัติเพื่อดูวันอื่น ๆ ที่ยังไม่ได้ทำ"}
             </p>
           </div>
         </div>
