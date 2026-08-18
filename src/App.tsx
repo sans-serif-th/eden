@@ -1,17 +1,28 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import { AppStateProvider } from "./AppState";
+import { AppStateProvider, useAppState } from "./AppState";
+import { OnboardingPage } from "./pages/OnboardingPage";
 import { SelectBookPage } from "./pages/SelectBookPage";
 import { TodayPage } from "./pages/TodayPage";
 import { LessonStepPage } from "./pages/LessonStepPage";
 import { SuccessPage } from "./pages/SuccessPage";
 import { HistoryPage } from "./pages/HistoryPage";
 
+function RootRoute() {
+  const { onboardingComplete } = useAppState();
+  return onboardingComplete ? (
+    <SelectBookPage />
+  ) : (
+    <Navigate to="/onboarding/1" replace />
+  );
+}
+
 export default function App() {
   return (
     <AppStateProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<SelectBookPage />} />
+          <Route path="/" element={<RootRoute />} />
+          <Route path="/onboarding/:step" element={<OnboardingPage />} />
           <Route path="/today" element={<TodayPage />} />
           <Route path="/lesson/:step" element={<LessonStepPage />} />
           <Route path="/success" element={<SuccessPage />} />

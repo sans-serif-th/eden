@@ -15,7 +15,7 @@ export interface DayContent {
   scriptureReference: string;
   memoryVerse: string;
   reading: { teaser: string };
-  understanding: { question: string; explanation: string };
+  understanding: { question: string; explanation: string[] };
   reflection: string;
   closingPrayer: string;
 }
