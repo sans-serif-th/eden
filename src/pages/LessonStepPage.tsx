@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ScreenShell } from "../components/ScreenShell";
 import { StepHeader } from "../components/StepHeader";
@@ -9,8 +9,10 @@ import {
   TEMPLATE_COPY,
   TOTAL_STEPS,
 } from "../data/stepDefinitions";
-import { getDayContent } from "../data/dayContent";
+import { getDayContent, hasUnderstandingStep } from "../data/dayContent";
 import { useAppState } from "../AppState";
+
+const UNDERSTANDING_STEP = 4;
 
 export function LessonStepPage() {
   const { step: stepParam } = useParams();
@@ -20,6 +22,19 @@ export function LessonStepPage() {
   const stepNumber = Number(stepParam);
   const step = STEP_DEFINITIONS[stepNumber - 1];
   const day = getDayContent(currentDay);
+
+  // Some Days skip ทำความเข้าใจพระคัมภีร์ entirely in the source — never
+  // show a blank step 4, whichever direction the user arrived from.
+  useEffect(() => {
+    if (
+      day &&
+      stepNumber === UNDERSTANDING_STEP &&
+      !hasUnderstandingStep(day)
+    ) {
+      navigate(`/lesson/${UNDERSTANDING_STEP + 1}`, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stepNumber, day]);
 
   const [readingAnswer, setReadingAnswer] = useState(
     answers[`${stepNumber}-reading`] ?? "",
@@ -47,13 +62,24 @@ export function LessonStepPage() {
   const handleContinue = () => {
     persistDraft();
     completeStep(stepNumber);
-    if (stepNumber >= TOTAL_STEPS) navigate("/success");
-    else navigate(`/lesson/${stepNumber + 1}`);
+    if (stepNumber >= TOTAL_STEPS) {
+      navigate("/success");
+      return;
+    }
+    let next = stepNumber + 1;
+    if (next === UNDERSTANDING_STEP && day && !hasUnderstandingStep(day)) {
+      next += 1;
+    }
+    navigate(`/lesson/${next}`);
   };
 
   const handleBack = () => {
     persistDraft();
-    navigate(`/lesson/${stepNumber - 1}`);
+    let prev = stepNumber - 1;
+    if (prev === UNDERSTANDING_STEP && day && !hasUnderstandingStep(day)) {
+      prev -= 1;
+    }
+    navigate(`/lesson/${prev}`);
   };
 
   return (
