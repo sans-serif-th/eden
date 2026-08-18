@@ -3,6 +3,7 @@ import { AppStateProvider, useAppState } from "./AppState";
 import { OnboardingPage } from "./pages/OnboardingPage";
 import { SelectLevelPage } from "./pages/SelectLevelPage";
 import { SelectBookPage } from "./pages/SelectBookPage";
+import { NewPlanPage } from "./pages/NewPlanPage";
 import { TodayPage } from "./pages/TodayPage";
 import { LessonStepPage } from "./pages/LessonStepPage";
 import { SuccessPage } from "./pages/SuccessPage";
@@ -28,6 +29,7 @@ export default function App() {
           <Route path="/" element={<RootRoute />} />
           <Route path="/onboarding/:step" element={<OnboardingPage />} />
           <Route path="/select-book" element={<SelectBookPage />} />
+          <Route path="/new-plan" element={<NewPlanPage />} />
           <Route path="/today" element={<TodayPage />} />
           <Route path="/lesson/:step" element={<LessonStepPage />} />
           <Route path="/success" element={<SuccessPage />} />

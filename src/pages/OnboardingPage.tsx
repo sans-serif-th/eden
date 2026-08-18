@@ -10,13 +10,20 @@ import {
   placeOptions,
   startOptions,
 } from "../data/onboarding";
+import { currentBook, levels } from "../data/books";
 import { useAppState } from "../AppState";
 
 export function OnboardingPage() {
   const { step: stepParam } = useParams();
   const navigate = useNavigate();
-  const { onboarding, setOnboardingAnswer, completeOnboarding } =
-    useAppState();
+  const {
+    onboarding,
+    setOnboardingAnswer,
+    completeOnboarding,
+    activeEnrollment,
+    setActiveLevel,
+    setEnrollmentStart,
+  } = useAppState();
 
   const stepNumber = Number(stepParam);
   if (!stepNumber || stepNumber < 1 || stepNumber > ONBOARDING_TOTAL_STEPS)
@@ -25,7 +32,7 @@ export function OnboardingPage() {
   const handleContinue = () => {
     if (stepNumber >= ONBOARDING_TOTAL_STEPS) {
       completeOnboarding();
-      navigate("/");
+      navigate("/today");
     } else {
       navigate(`/onboarding/${stepNumber + 1}`);
     }
@@ -40,9 +47,6 @@ export function OnboardingPage() {
           <div className="flex flex-col gap-4">
             <p className="text-[16px] font-semibold text-brand">
               เวลานัดหมายกับพระเจ้า
-            </p>
-            <p className="text-[16px] font-medium text-ink-muted">
-              ขั้นที่ {stepNumber} จาก {ONBOARDING_TOTAL_STEPS}
             </p>
             <ProgressBar
               percent={(stepNumber / ONBOARDING_TOTAL_STEPS) * 100}
@@ -92,23 +96,88 @@ export function OnboardingPage() {
             {stepNumber === 4 && (
               <>
                 <h1 className="text-2xl font-semibold text-ink">
+                  เลือกระดับที่ต้องการเรียน
+                </h1>
+                <p className="text-[16px] text-ink-muted">
+                  แต่ละระดับมีคู่มือเฝ้าเดี่ยวของตัวเอง เลือกระดับที่เหมาะกับคุณ
+                </p>
+                <div className="flex flex-col gap-2.5">
+                  {levels.map((level) => {
+                    const selected = level.value === activeEnrollment.level;
+                    return (
+                      <button
+                        key={level.value}
+                        type="button"
+                        disabled={!level.enabled}
+                        onClick={() => setActiveLevel(level.value)}
+                        className={`flex h-14 w-full items-center justify-between rounded-2xl border px-4 text-[16px] font-medium transition-colors disabled:cursor-not-allowed ${
+                          selected
+                            ? "border-brand-accent bg-surface-tint text-brand"
+                            : level.enabled
+                              ? "border-fieldline bg-surface text-ink"
+                              : "border-fieldline bg-surface text-ink-faint"
+                        }`}
+                      >
+                        <span>{level.label}</span>
+                        {!level.enabled && (
+                          <span className="text-[16px] text-ink-faint">
+                            เร็ว ๆ นี้
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+
+            {stepNumber === 5 && (
+              <>
+                <h1 className="text-2xl font-semibold text-ink">
+                  เลือกเล่มที่กำลังเรียน
+                </h1>
+                <p className="text-[16px] text-ink-muted">
+                  เริ่มต้นด้วยการเลือกคู่มือที่ต้องการเรียน
+                </p>
+                <div className="flex flex-col gap-2 rounded-[18px] border-2 border-brand-accent bg-surface p-[18px]">
+                  <p className="text-[18px] font-semibold text-ink">
+                    {currentBook.title}
+                  </p>
+                  <p className="text-[16px] text-ink-muted">
+                    {currentBook.description}
+                  </p>
+                  <p className="text-[16px] font-medium text-brand-accent">
+                    0 / {currentBook.totalDays} วัน
+                  </p>
+                </div>
+              </>
+            )}
+
+            {stepNumber === 6 && (
+              <>
+                <h1 className="text-2xl font-semibold text-ink">
                   ข้าพเจ้าต้องการเริ่มเฝ้าเดี่ยว
                 </h1>
                 <OptionGroup
                   options={startOptions.map((o) => o.value)}
-                  value={onboarding.startPreference}
-                  onChange={(v) => setOnboardingAnswer("startPreference", v)}
+                  value={activeEnrollment.startPreference}
+                  onChange={(v) =>
+                    setEnrollmentStart(v, activeEnrollment.customStartDate)
+                  }
                   formatLabel={(v) =>
                     startOptions.find((o) => o.value === v)?.label ?? v
                   }
                 />
-                {onboarding.startPreference === "custom" && (
+                {activeEnrollment.startPreference === "custom" && (
                   <input
                     type="date"
-                    value={onboarding.customStartDate}
+                    value={activeEnrollment.customStartDate}
                     min={new Date().toISOString().slice(0, 10)}
                     onChange={(e) =>
-                      setOnboardingAnswer("customStartDate", e.target.value)
+                      setEnrollmentStart(
+                        activeEnrollment.startPreference,
+                        e.target.value,
+                      )
                     }
                     className="h-14 w-full rounded-2xl border border-fieldline bg-surface px-4 text-[16px] font-medium text-ink focus:border-brand-accent focus:outline-none"
                   />

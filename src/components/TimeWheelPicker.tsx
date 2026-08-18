@@ -4,25 +4,17 @@ const ROW_HEIGHT = 44;
 const VISIBLE_ROWS = 7;
 const PICKER_HEIGHT = ROW_HEIGHT * VISIBLE_ROWS;
 
-type Period = "am" | "pm";
-
 function parseTime(value: string) {
   const [h, m] = value.split(":").map(Number);
-  const period: Period = h >= 12 ? "pm" : "am";
-  let hour12 = h % 12;
-  if (hour12 === 0) hour12 = 12;
-  return { hour12, minute: m, period };
+  return { hour: h, minute: m };
 }
 
-function formatTime(hour12: number, minute: number, period: Period) {
-  let h24 = hour12 % 12;
-  if (period === "pm") h24 += 12;
-  return `${String(h24).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+function formatTime(hour: number, minute: number) {
+  return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 }
 
-const HOURS = Array.from({ length: 12 }, (_, i) => i + 1);
+const HOURS = Array.from({ length: 24 }, (_, i) => i);
 const MINUTES = Array.from({ length: 60 }, (_, i) => i);
-const PERIODS: Period[] = ["am", "pm"];
 
 function WheelColumn<T extends string | number>({
   items,
@@ -110,7 +102,7 @@ export function TimeWheelPicker({
   value: string;
   onChange: (value: string) => void;
 }) {
-  const { hour12, minute, period } = parseTime(value);
+  const { hour, minute } = parseTime(value);
 
   return (
     <div
@@ -125,9 +117,9 @@ export function TimeWheelPicker({
       <div className="relative flex h-full">
         <WheelColumn
           items={HOURS}
-          selected={hour12}
-          onSelect={(h) => onChange(formatTime(h, minute, period))}
-          format={(h) => String(h)}
+          selected={hour}
+          onSelect={(h) => onChange(formatTime(h, minute))}
+          format={(h) => String(h).padStart(2, "0")}
         />
         <div
           className="flex items-center justify-center text-[22px] font-semibold text-ink"
@@ -138,15 +130,15 @@ export function TimeWheelPicker({
         <WheelColumn
           items={MINUTES}
           selected={minute}
-          onSelect={(m) => onChange(formatTime(hour12, m, period))}
+          onSelect={(m) => onChange(formatTime(hour, m))}
           format={(m) => String(m).padStart(2, "0")}
         />
-        <WheelColumn
-          items={PERIODS}
-          selected={period}
-          onSelect={(p) => onChange(formatTime(hour12, minute, p))}
-          format={(p) => p}
-        />
+        <div
+          className="flex items-center justify-center text-[16px] font-medium text-ink-muted"
+          style={{ width: 32 }}
+        >
+          น.
+        </div>
       </div>
     </div>
   );

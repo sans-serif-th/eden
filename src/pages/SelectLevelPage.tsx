@@ -1,14 +1,20 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ScreenShell } from "../components/ScreenShell";
 import { ScreenHeader } from "../components/ScreenHeader";
 import { PrimaryButton } from "../components/PrimaryButton";
-import { BottomNav } from "../components/BottomNav";
 import { levels } from "../data/books";
 import { useAppState } from "../AppState";
 
 export function SelectLevelPage() {
   const navigate = useNavigate();
-  const { selectedLevel, selectLevel } = useAppState();
+  const { activeEnrollment, requestLevelSwitch } = useAppState();
+  const [chosenLevel, setChosenLevel] = useState(activeEnrollment.level);
+
+  const handleContinue = () => {
+    requestLevelSwitch(chosenLevel);
+    navigate("/select-book");
+  };
 
   return (
     <ScreenShell>
@@ -24,16 +30,22 @@ export function SelectLevelPage() {
           <p className="text-[16px] text-ink-muted">
             แต่ละระดับมีคู่มือเฝ้าเดี่ยวของตัวเอง เลือกระดับที่เหมาะกับคุณ
           </p>
+          {chosenLevel !== activeEnrollment.level && (
+            <p className="rounded-2xl bg-surface-tint px-4 py-3 text-[16px] text-brand-accent">
+              การเปลี่ยนระดับต้องตั้งแผนการเฝ้าเดี่ยวใหม่ แผนเดิมจะถูกเก็บไว้
+              ไม่ลบข้อมูลที่เคยบันทึก
+            </p>
+          )}
 
           <div className="flex flex-col gap-2.5">
             {levels.map((level) => {
-              const selected = level.value === selectedLevel;
+              const selected = level.value === chosenLevel;
               return (
                 <button
                   key={level.value}
                   type="button"
                   disabled={!level.enabled}
-                  onClick={() => selectLevel(level.value)}
+                  onClick={() => setChosenLevel(level.value)}
                   className={`flex h-14 w-full items-center justify-between rounded-2xl border px-4 text-[16px] font-medium transition-colors disabled:cursor-not-allowed ${
                     selected
                       ? "border-brand-accent bg-surface-tint text-brand"
@@ -53,10 +65,7 @@ export function SelectLevelPage() {
         </div>
 
         <div className="flex flex-col gap-3 p-6">
-          <PrimaryButton onClick={() => navigate("/select-book")}>
-            ถัดไป
-          </PrimaryButton>
-          <BottomNav active="today" />
+          <PrimaryButton onClick={handleContinue}>ถัดไป</PrimaryButton>
         </div>
       </div>
     </ScreenShell>
