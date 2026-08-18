@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", "Noto Sans Thai", system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-sans: "thonglor-soi-4-nr", "Inter", "Noto Sans Thai", system-ui, "Segoe UI", Roboto, sans-serif;
 
   --color-app: #f8f6f0;
   --color-surface: #fffffb;
@@ -31,4 +31,12 @@ body {
   color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
