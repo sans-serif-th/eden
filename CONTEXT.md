@@ -1,4 +1,4 @@
-# Daily Mana — Devotion Content
+# EDEN — Devotion Content
 
 The LINE LIFF app that guides a user through one daily devotion entry at a time, drawn from a published QT (Quiet Time) curriculum authored by คริสตจักรพันธกิจเชียงใหม่.
 

@@ -17,7 +17,7 @@ export function SelectBookPage() {
           <ScreenHeader title="เลือกเล่มที่เรียน" />
         </div>
         <div className="flex flex-1 flex-col gap-4 px-6 py-4">
-          <p className="text-xs font-semibold text-brand">DAILY DEVOTION</p>
+          <p className="text-xs font-semibold text-brand">EDEN</p>
           <h1 className="text-2xl font-semibold text-ink">
             เลือกเล่มที่กำลังเรียน
           </h1>
