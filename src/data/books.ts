@@ -1,5 +1,5 @@
 export const levels = [
-  { value: "beginner", label: "สำหรับผู้เชื่อใหม่", enabled: false },
+  { value: "beginner", label: "สำหรับผู้เชื่อใหม่", enabled: true },
   { value: "year-1", label: "ปีที่ 1", enabled: true },
   { value: "year-2", label: "ปีที่ 2", enabled: false },
   { value: "year-3", label: "ปีที่ 3", enabled: false },
@@ -27,6 +27,14 @@ export const booksByLevel: Record<string, Book[]> = {
       title: "เล่มที่ 2",
       description: "เรียนรู้ตามลำดับ วันละหนึ่งบทเรียน",
       totalDays: 29, // กุมภาพันธ์
+    },
+  ],
+  beginner: [
+    {
+      book: 1,
+      title: "เล่มที่ 1",
+      description: "คู่มือเฝ้าเดี่ยวสำหรับผู้เชื่อใหม่ วันละหนึ่งบทเรียน",
+      totalDays: 40,
     },
   ],
 };
