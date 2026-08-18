@@ -9,13 +9,17 @@ import { WeekStrip } from "../components/WeekStrip";
 import { STEP_DEFINITIONS, TOTAL_STEPS } from "../data/stepDefinitions";
 import { getDayContent } from "../data/dayContent";
 import { currentBook } from "../data/books";
-import { getBookDayForDate, getPlanStartDate } from "../data/onboarding";
+import {
+  getBookDayForDate,
+  getPlanStartDate,
+  formatThaiDateShort,
+} from "../data/onboarding";
 import { mockUserName } from "../data/user";
 import { useAppState } from "../AppState";
 
 export function TodayPage() {
   const navigate = useNavigate();
-  const { currentStep, selectedLevel, onboarding } = useAppState();
+  const { currentStep, activeEnrollment } = useAppState();
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const notStarted = currentStep === 0;
@@ -32,18 +36,22 @@ export function TodayPage() {
   const isToday = selectedDate.toDateString() === new Date().toDateString();
   const selectedDayNumber = getBookDayForDate(
     selectedDate,
-    onboarding.startPreference,
-    onboarding.customStartDate,
+    activeEnrollment.startPreference,
+    activeEnrollment.customStartDate,
   );
   const selectedDayContent = !isToday
     ? getDayContent(selectedDayNumber)
     : undefined;
 
+  // currentDay from AppState clamps to a minimum of 1 for safe content lookup,
+  // so check the raw (unclamped) value here to know if the plan has actually started.
+  const planNotStartedYet = isToday && selectedDayNumber < 1;
+
   return (
     <ScreenShell>
       <div className="flex flex-1 flex-col">
         <div className="flex items-center justify-between px-6 pt-4">
-          <LevelBookSwitcher selectedLevel={selectedLevel} />
+          <LevelBookSwitcher selectedLevel={activeEnrollment.level} />
           <div className="size-8 shrink-0 rounded-full bg-brand-soft" />
         </div>
         <div className="px-6 pt-4">
@@ -59,44 +67,64 @@ export function TodayPage() {
           </h1>
 
           {isToday ? (
-            <div className="flex flex-col gap-3 rounded-[22px] bg-surface p-5 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.06)]">
-              <p className="text-[16px] font-semibold text-brand-accent">
-                บทเรียนของวันนี้
-              </p>
-              {notStarted ? (
-                <>
-                  <p className="text-[21px] font-semibold text-ink">
-                    {STEP_DEFINITIONS[0].title}
-                  </p>
-                  <p className="text-[16px] text-ink-muted">
-                    ยังไม่เริ่มบทเรียนวันนี้
-                  </p>
-                </>
-              ) : (
-                <>
-                  <p className="text-[21px] font-semibold text-ink">
-                    {doneToday ? "เสร็จสิ้นแล้ว" : activeStep.title}
-                  </p>
-                  <p className="text-[16px] text-ink-muted">
-                    {doneToday
-                      ? "ทำเฝ้าเดี่ยววันนี้ครบแล้ว"
-                      : `ทำต่อจากขั้น: ${activeStep.title}`}
-                  </p>
-                </>
-              )}
-              <div className="flex flex-col gap-1.5">
-                <ProgressBar
-                  percent={
-                    doneToday
-                      ? 100
-                      : (Math.min(currentStep, TOTAL_STEPS) / TOTAL_STEPS) * 100
-                  }
-                />
-                <p className="text-[16px] font-medium text-brand-accent">
-                  {Math.min(currentStep, TOTAL_STEPS)} จาก {TOTAL_STEPS} ขั้นตอน
+            planNotStartedYet ? (
+              <div className="flex flex-col gap-3 rounded-[22px] bg-surface p-5 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.06)]">
+                <p className="text-[16px] font-semibold text-brand-accent">
+                  ยังไม่ถึงวันเริ่มต้น
+                </p>
+                <p className="text-[21px] font-semibold text-ink">
+                  แผนการเฝ้าเดี่ยวของคุณยังไม่เริ่ม
+                </p>
+                <p className="text-[16px] text-ink-muted">
+                  แผนจะเริ่มวันที่{" "}
+                  {formatThaiDateShort(
+                    getPlanStartDate(
+                      activeEnrollment.startPreference,
+                      activeEnrollment.customStartDate,
+                    ),
+                  )}
                 </p>
               </div>
-            </div>
+            ) : (
+              <div className="flex flex-col gap-3 rounded-[22px] bg-surface p-5 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.06)]">
+                <p className="text-[16px] font-semibold text-brand-accent">
+                  บทเรียนของวันนี้
+                </p>
+                {notStarted ? (
+                  <>
+                    <p className="text-[21px] font-semibold text-ink">
+                      {STEP_DEFINITIONS[0].title}
+                    </p>
+                    <p className="text-[16px] text-ink-muted">
+                      ยังไม่เริ่มบทเรียนวันนี้
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-[21px] font-semibold text-ink">
+                      {doneToday ? "เสร็จสิ้นแล้ว" : activeStep.title}
+                    </p>
+                    <p className="text-[16px] text-ink-muted">
+                      {doneToday
+                        ? "ทำเฝ้าเดี่ยววันนี้ครบแล้ว"
+                        : `ทำต่อจากขั้น: ${activeStep.title}`}
+                    </p>
+                  </>
+                )}
+                <div className="flex flex-col gap-1.5">
+                  <ProgressBar
+                    percent={
+                      doneToday
+                        ? 100
+                        : (Math.min(currentStep, TOTAL_STEPS) / TOTAL_STEPS) * 100
+                    }
+                  />
+                  <p className="text-[16px] font-medium text-brand-accent">
+                    {Math.min(currentStep, TOTAL_STEPS)} จาก {TOTAL_STEPS} ขั้นตอน
+                  </p>
+                </div>
+              </div>
+            )
           ) : (
             <div className="flex flex-col gap-3 rounded-[22px] bg-surface p-5 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.06)]">
               <p className="text-[16px] font-semibold text-brand-accent">
@@ -128,8 +156,8 @@ export function TodayPage() {
                 onClick={() =>
                   setSelectedDate(
                     getPlanStartDate(
-                      onboarding.startPreference,
-                      onboarding.customStartDate,
+                      activeEnrollment.startPreference,
+                      activeEnrollment.customStartDate,
                     ),
                   )
                 }
@@ -141,7 +169,9 @@ export function TodayPage() {
         </div>
 
         <div className="flex flex-col gap-2 p-6">
-          {isToday && <PrimaryButton onClick={handleCta}>{ctaLabel}</PrimaryButton>}
+          {isToday && !planNotStartedYet && (
+            <PrimaryButton onClick={handleCta}>{ctaLabel}</PrimaryButton>
+          )}
           <BottomNav active="today" />
         </div>
       </div>

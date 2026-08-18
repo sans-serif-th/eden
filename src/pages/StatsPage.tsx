@@ -14,11 +14,10 @@ import {
 import { useAppState } from "../AppState";
 
 export function StatsPage() {
-  const { selectedLevel, answers, onboarding, setOnboardingAnswer } =
-    useAppState();
+  const { activeEnrollment, answers, setEnrollmentStart } = useAppState();
   const [isEditingPlan, setIsEditingPlan] = useState(false);
 
-  const level = levels.find((l) => l.value === selectedLevel);
+  const level = levels.find((l) => l.value === activeEnrollment.level);
   const daysStudied = history.filter(
     (h) => h.status === "เสร็จสิ้นแล้ว",
   ).length;
@@ -29,8 +28,8 @@ export function StatsPage() {
   ).length;
 
   const startDate = getPlanStartDate(
-    onboarding.startPreference,
-    onboarding.customStartDate,
+    activeEnrollment.startPreference,
+    activeEnrollment.customStartDate,
   );
   const endDate = new Date(startDate);
   endDate.setDate(endDate.getDate() + currentBook.totalDays - 1);
@@ -78,19 +77,24 @@ export function StatsPage() {
           >
             <OptionGroup
               options={startOptions.map((o) => o.value)}
-              value={onboarding.startPreference}
-              onChange={(v) => setOnboardingAnswer("startPreference", v)}
+              value={activeEnrollment.startPreference}
+              onChange={(v) =>
+                setEnrollmentStart(v, activeEnrollment.customStartDate)
+              }
               formatLabel={(v) =>
                 startOptions.find((o) => o.value === v)?.label ?? v
               }
             />
-            {onboarding.startPreference === "custom" && (
+            {activeEnrollment.startPreference === "custom" && (
               <input
                 type="date"
-                value={onboarding.customStartDate}
+                value={activeEnrollment.customStartDate}
                 min={new Date().toISOString().slice(0, 10)}
                 onChange={(e) =>
-                  setOnboardingAnswer("customStartDate", e.target.value)
+                  setEnrollmentStart(
+                    activeEnrollment.startPreference,
+                    e.target.value,
+                  )
                 }
                 className="h-14 w-full rounded-2xl border border-fieldline bg-surface px-4 text-[16px] font-medium text-ink focus:border-brand-accent focus:outline-none"
               />

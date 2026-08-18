@@ -2,13 +2,15 @@ import { useNavigate } from "react-router-dom";
 import { ScreenShell } from "../components/ScreenShell";
 import { ScreenHeader } from "../components/ScreenHeader";
 import { PrimaryButton } from "../components/PrimaryButton";
-import { BottomNav } from "../components/BottomNav";
-import { currentBook } from "../data/books";
+import { currentBook, levels } from "../data/books";
 import { useAppState } from "../AppState";
 
 export function SelectBookPage() {
   const navigate = useNavigate();
-  const { selectBook } = useAppState();
+  const { selectBook, pendingLevel, activeEnrollment } = useAppState();
+  const levelLabel = levels.find(
+    (l) => l.value === (pendingLevel ?? activeEnrollment.level),
+  )?.label;
 
   return (
     <ScreenShell>
@@ -21,6 +23,11 @@ export function SelectBookPage() {
           <h1 className="text-2xl font-semibold text-ink">
             เลือกเล่มที่กำลังเรียน
           </h1>
+          {levelLabel && (
+            <p className="text-[16px] text-ink-muted">
+              ระดับที่เลือก: <span className="font-medium text-ink">{levelLabel}</span>
+            </p>
+          )}
           <p className="text-[16px] text-ink-muted">
             เริ่มต้นด้วยการเลือกคู่มือที่ต้องการเรียน
           </p>
@@ -47,12 +54,11 @@ export function SelectBookPage() {
           <PrimaryButton
             onClick={() => {
               selectBook();
-              navigate("/today");
+              navigate(pendingLevel ? "/new-plan" : "/today");
             }}
           >
             เลือกเล่มนี้
           </PrimaryButton>
-          <BottomNav active="today" />
         </div>
       </div>
     </ScreenShell>
