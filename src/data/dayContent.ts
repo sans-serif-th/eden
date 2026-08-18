@@ -1,6 +1,7 @@
 import type { DayContent } from "../types";
 import book01Raw from "./content/book-01.json";
 import book02Raw from "./content/book-02.json";
+import beginnerBook01Raw from "./content/beginner-01.json";
 
 interface RawDay {
   day: number;
@@ -37,11 +38,17 @@ const book1Days: DayContent[] = (book01Raw as RawDay[]).map((d) =>
 const book2Days: DayContent[] = (book02Raw as RawDay[]).map((d) =>
   toDayContent(d, 2),
 );
+const beginnerBook1Days: DayContent[] = (beginnerBook01Raw as RawDay[]).map(
+  (d) => toDayContent(d, 1),
+);
 
 const CONTENT_BY_LEVEL_BOOK: Record<string, Record<number, DayContent[]>> = {
   "year-1": {
     1: book1Days,
     2: book2Days,
+  },
+  beginner: {
+    1: beginnerBook1Days,
   },
 };
 
