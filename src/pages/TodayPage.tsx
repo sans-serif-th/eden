@@ -1,16 +1,16 @@
 import { useNavigate } from "react-router-dom";
 import { ScreenShell } from "../components/ScreenShell";
-import { ScreenHeader } from "../components/ScreenHeader";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { ProgressBar } from "../components/ProgressBar";
 import { BottomNav } from "../components/BottomNav";
-import { currentBook } from "../data/books";
+import { LevelBookSwitcher } from "../components/LevelBookSwitcher";
+import { WeekStrip } from "../components/WeekStrip";
 import { STEP_DEFINITIONS, TOTAL_STEPS } from "../data/stepDefinitions";
 import { useAppState } from "../AppState";
 
 export function TodayPage() {
   const navigate = useNavigate();
-  const { currentDay, totalDays, currentStep } = useAppState();
+  const { currentStep, selectedLevel } = useAppState();
 
   const notStarted = currentStep === 0;
   const doneToday = currentStep > TOTAL_STEPS;
@@ -26,21 +26,17 @@ export function TodayPage() {
   return (
     <ScreenShell>
       <div className="flex flex-1 flex-col">
-        <div className="px-6">
-          <ScreenHeader
-            title="เฝ้าเดี่ยว"
-            right={
-              <div className="size-8 rounded-full bg-brand-soft" />
-            }
-          />
+        <div className="flex items-center justify-between px-6 pt-4">
+          <LevelBookSwitcher selectedLevel={selectedLevel} />
+          <div className="size-8 shrink-0 rounded-full bg-brand-soft" />
+        </div>
+        <div className="px-6 pt-4">
+          <WeekStrip todayDone={doneToday} />
         </div>
         <div className="flex flex-1 flex-col gap-4 px-6 py-4">
           <h1 className="text-[25px] font-semibold text-ink">
             สวัสดี, วันนี้พร้อมไหม
           </h1>
-          <p className="text-sm font-medium text-brand-accent">
-            {currentBook.title} &nbsp;•&nbsp; วันที่ {currentDay} จาก {totalDays}
-          </p>
 
           <div className="flex flex-col gap-3 rounded-[22px] bg-surface p-5 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.06)]">
             <p className="text-[13px] font-semibold text-brand-accent">
