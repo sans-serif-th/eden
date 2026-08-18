@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Zap } from "lucide-react";
 
 const DAY_LABELS = ["จ", "อ", "พ", "พฤ", "ศ", "ส", "อา"]; // Mon..Sun
@@ -17,6 +16,11 @@ const MONTH_LABELS = [
   "ธันวาคม",
 ];
 
+// Loading lesson previews for every visible day would mean touching content
+// for the whole Mon-Sun week; capped to a ±2 day window around today to
+// keep this to at most 5 lookups regardless of which weekday "today" is.
+const SELECTABLE_RADIUS_DAYS = 2;
+
 function getWeekDates(today: Date): Date[] {
   const day = today.getDay(); // 0 = Sun
   const mondayOffset = day === 0 ? -6 : 1 - day;
@@ -30,12 +34,23 @@ function getWeekDates(today: Date): Date[] {
   });
 }
 
-export function WeekStrip({ todayDone }: { todayDone: boolean }) {
+function daysBetween(a: Date, b: Date): number {
+  const msPerDay = 1000 * 60 * 60 * 24;
+  return Math.round((b.setHours(0, 0, 0, 0) - a.setHours(0, 0, 0, 0)) / msPerDay);
+}
+
+export function WeekStrip({
+  todayDone,
+  selectedDate,
+  onSelectDate,
+}: {
+  todayDone: boolean;
+  selectedDate: Date;
+  onSelectDate: (date: Date) => void;
+}) {
   const now = new Date();
   const dates = getWeekDates(now);
-  const [selected, setSelected] = useState(now.toDateString());
 
-  // Month label: if the week spans two months, show both.
   const months = Array.from(
     new Set(dates.map((d) => MONTH_LABELS[d.getMonth()])),
   );
@@ -49,15 +64,16 @@ export function WeekStrip({ todayDone }: { todayDone: boolean }) {
         {dates.map((date, i) => {
           const key = date.toDateString();
           const isToday = key === now.toDateString();
-          const isFuture = date > now && !isToday;
-          const isSelected = key === selected;
+          const offset = daysBetween(new Date(now), new Date(date));
+          const isSelectable = Math.abs(offset) <= SELECTABLE_RADIUS_DAYS;
+          const isSelected = key === selectedDate.toDateString();
 
           return (
             <button
               key={i}
               type="button"
-              disabled={isFuture}
-              onClick={() => setSelected(key)}
+              disabled={!isSelectable}
+              onClick={() => onSelectDate(date)}
               className="flex flex-col items-center gap-1 disabled:cursor-not-allowed"
             >
               <span
@@ -71,9 +87,9 @@ export function WeekStrip({ todayDone }: { todayDone: boolean }) {
                     ? "bg-brand text-white"
                     : isSelected
                       ? "border-2 border-brand bg-surface-tint text-brand"
-                      : isFuture
-                        ? "border border-fieldline text-ink-faint/50"
-                        : "border border-fieldline text-ink-muted"
+                      : isSelectable
+                        ? "border border-fieldline text-ink-muted"
+                        : "border border-fieldline text-ink-faint/50"
                 }`}
               >
                 {isToday && todayDone ? (

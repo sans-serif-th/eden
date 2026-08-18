@@ -44,3 +44,19 @@ export function getPlanStartDate(startPreference: StartPreference, customStartDa
   }
   return today;
 }
+
+// Personal Calendar day number for a given real date — can be <1 (plan
+// hasn't started yet) or beyond the book's day count (not written yet).
+export function getBookDayForDate(
+  date: Date,
+  startPreference: StartPreference,
+  customStartDate: string,
+): number {
+  const startDate = getPlanStartDate(startPreference, customStartDate);
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  const diffDays = Math.round(
+    (d.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24),
+  );
+  return diffDays + 1;
+}
