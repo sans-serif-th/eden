@@ -71,6 +71,14 @@ export function TodayPage() {
   const selectedDayContent = !isToday
     ? getDayContent(activeEnrollment.level, activeEnrollment.book, selectedDayNumber)
     : undefined;
+  const selectedDayRecord = activeEnrollment.dayRecords[selectedDayNumber];
+  const selectedDayDone = selectedDayRecord?.status === "done";
+  const selectedDayStep = selectedDayRecord?.currentStep ?? 0;
+  const selectedDayCtaLabel = selectedDayDone
+    ? "ดูสรุป"
+    : selectedDayStep > 0
+      ? "ทำต่อ"
+      : "เริ่มบทเรียนนี้";
 
   // currentDay from AppState clamps to a minimum of 1 for safe content lookup,
   // so check the raw (unclamped) value here to know if the plan has actually started.
@@ -206,6 +214,19 @@ export function TodayPage() {
                 </>
               ) : (
                 <p className="text-[16px] text-ink-muted">ยังไม่มีเนื้อหาสำหรับวันนี้</p>
+              )}
+              {selectedDayContent && (
+                <PrimaryButton
+                  onClick={() =>
+                    selectedDayDone
+                      ? navigate(`/history/${selectedDayNumber}`)
+                      : navigate(
+                          `/lesson/${selectedDayNumber}/${selectedDayStep > 0 ? selectedDayStep : 1}`,
+                        )
+                  }
+                >
+                  {selectedDayCtaLabel}
+                </PrimaryButton>
               )}
               <OutlineButton onClick={() => setSelectedDate(new Date())}>
                 ไปที่วันนี้
