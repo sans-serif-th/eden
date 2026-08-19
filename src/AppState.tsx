@@ -312,7 +312,15 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     },
     completeOnboarding: () => {
       setOnboardingComplete(true);
-      if (userId) void upsertOnboarding(userId, true, onboarding);
+      if (userId) {
+        void upsertOnboarding(userId, true, onboarding);
+        // setActiveLevel/setEnrollmentStart already upsert on every change,
+        // but a user who never touches a step (accepting every default) can
+        // reach here without the Enrollment ever having been written — do it
+        // here too so day_records' FK to enrollments always has a row to
+        // point at once the user starts logging progress.
+        void upsertEnrollment(userId, activeEnrollment, true);
+      }
     },
     setActiveLevel: (level) => {
       setActiveEnrollment((prev) => {
