@@ -15,7 +15,8 @@ import { SettingsPage } from "./pages/SettingsPage";
 import { StatsPage } from "./pages/StatsPage";
 
 function RootRoute() {
-  const { onboardingComplete } = useAppState();
+  const { isAuthenticated, onboardingComplete } = useAppState();
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
   return onboardingComplete ? (
     <SelectLevelPage />
   ) : (

@@ -7,7 +7,8 @@ import {
 } from "react";
 import { TOTAL_STEPS } from "./data/stepDefinitions";
 import { getBookDayForDate, type StartPreference } from "./data/onboarding";
-import { supabase, ensureSignedIn } from "./lib/supabase";
+import { supabase } from "./lib/supabase";
+import { bootstrapAuth } from "./lib/auth";
 import { getLineProfile, logoutFromLine, type LineProfile } from "./lib/liff";
 
 export interface OnboardingAnswers {
@@ -51,6 +52,7 @@ export interface PendingEnrollment {
 
 type DevotionState = {
   isLoading: boolean;
+  isAuthenticated: boolean;
   lineProfile: LineProfile | null;
   onboardingComplete: boolean;
   onboarding: OnboardingAnswers;
@@ -188,6 +190,7 @@ function upsertDayRecord(
 
 export function AppStateProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [lineProfile, setLineProfile] = useState<LineProfile | null>(null);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
@@ -205,8 +208,13 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     let cancelled = false;
     (async () => {
       try {
-        const uid = await ensureSignedIn();
+        const uid = await bootstrapAuth();
         if (cancelled) return;
+        if (!uid) {
+          setIsAuthenticated(false);
+          return;
+        }
+        setIsAuthenticated(true);
         setUserId(uid);
 
         const { data: onboardingRow } = await supabase
@@ -287,6 +295,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
 
   const value: DevotionState = {
     isLoading,
+    isAuthenticated,
     lineProfile,
     onboardingComplete,
     onboarding,
@@ -405,7 +414,10 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     },
     logout: () => {
       setLineProfile(null);
+      setIsAuthenticated(false);
+      setUserId(null);
       void logoutFromLine();
+      void supabase.auth.signOut();
     },
   };
 
