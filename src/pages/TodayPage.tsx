@@ -215,6 +215,18 @@ export function TodayPage() {
               ) : (
                 <p className="text-[16px] text-ink-muted">ยังไม่มีเนื้อหาสำหรับวันนี้</p>
               )}
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-2 p-6">
+          {isToday ? (
+            !planNotStartedYet &&
+            !bookFinished && (
+              <PrimaryButton onClick={handleCta}>{ctaLabel}</PrimaryButton>
+            )
+          ) : (
+            <>
               {selectedDayContent && (
                 <PrimaryButton
                   onClick={() =>
@@ -231,13 +243,7 @@ export function TodayPage() {
               <OutlineButton onClick={() => setSelectedDate(new Date())}>
                 ไปที่วันนี้
               </OutlineButton>
-            </div>
-          )}
-        </div>
-
-        <div className="flex flex-col gap-2 p-6">
-          {isToday && !planNotStartedYet && !bookFinished && (
-            <PrimaryButton onClick={handleCta}>{ctaLabel}</PrimaryButton>
+            </>
           )}
           <BottomNav active="today" />
         </div>
