@@ -3,17 +3,34 @@ import { useNavigate } from "react-router-dom";
 import { ScreenShell } from "../components/ScreenShell";
 import { BottomNav } from "../components/BottomNav";
 import { mockUserName } from "../data/user";
+import { useAppState } from "../AppState";
 
 export function ProfilePage() {
   const navigate = useNavigate();
+  const { lineProfile, logout } = useAppState();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
     <ScreenShell>
       <div className="flex flex-1 flex-col">
         <div className="flex flex-1 flex-col gap-6 px-6 py-6">
           <div className="flex flex-col items-center gap-3 pt-4">
-            <div className="size-16 rounded-full bg-brand-soft" />
-            <p className="text-[17px] font-semibold text-ink">{mockUserName}</p>
+            {lineProfile?.pictureUrl ? (
+              <img
+                src={lineProfile.pictureUrl}
+                alt=""
+                className="size-16 rounded-full object-cover"
+              />
+            ) : (
+              <div className="size-16 rounded-full bg-brand-soft" />
+            )}
+            <p className="text-[17px] font-semibold text-ink">
+              {lineProfile?.displayName ?? mockUserName}
+            </p>
           </div>
 
           <div className="flex flex-col gap-2">
@@ -33,7 +50,7 @@ export function ProfilePage() {
 
           <button
             type="button"
-            onClick={() => navigate("/login")}
+            onClick={handleLogout}
             className="flex items-center gap-3 rounded-2xl border border-fieldline bg-surface px-4 py-3.5 text-left"
           >
             <LogOut size={20} className="text-red-600" />

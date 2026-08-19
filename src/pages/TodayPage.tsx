@@ -19,7 +19,8 @@ import { useAppState } from "../AppState";
 
 export function TodayPage() {
   const navigate = useNavigate();
-  const { currentDay, activeEnrollment, requestNextBook } = useAppState();
+  const { currentDay, activeEnrollment, requestNextBook, lineProfile } =
+    useAppState();
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const currentBookDef = getBook(activeEnrollment.level, activeEnrollment.book);
@@ -83,7 +84,15 @@ export function TodayPage() {
             selectedLevel={activeEnrollment.level}
             book={activeEnrollment.book}
           />
-          <div className="size-8 shrink-0 rounded-full bg-brand-soft" />
+          {lineProfile?.pictureUrl ? (
+            <img
+              src={lineProfile.pictureUrl}
+              alt=""
+              className="size-8 shrink-0 rounded-full object-cover"
+            />
+          ) : (
+            <div className="size-8 shrink-0 rounded-full bg-brand-soft" />
+          )}
         </div>
         <div className="px-6 pt-4">
           <WeekStrip
@@ -94,7 +103,7 @@ export function TodayPage() {
         </div>
         <div className="flex flex-1 flex-col gap-4 px-6 py-4">
           <h1 className="text-[25px] font-semibold text-ink">
-            สวัสดี, {mockUserName}
+            สวัสดี, {lineProfile?.displayName ?? mockUserName}
           </h1>
 
           {isToday ? (
