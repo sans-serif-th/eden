@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Sprout } from "lucide-react";
 
 // Indexed by Date#getDay() (0 = Sun .. 6 = Sat).
@@ -17,16 +18,18 @@ const MONTH_LABELS = [
   "ธันวาคม",
 ];
 
-const TRAILING_DAYS = 7;
+// Two weeks, today roughly centered — a week back for catch-up, a week
+// ahead for a look at what's coming. Scrolls horizontally since 14 days
+// doesn't fit one screen width.
+const DAYS_BEFORE = 7;
+const DAYS_AFTER = 6;
 
-// The last 7 days ending today — showing lessons that haven't happened yet
-// added no value, so this never looks forward, only back.
-function getTrailingDates(today: Date): Date[] {
+function getTwoWeekDates(today: Date): Date[] {
   const base = new Date(today);
   base.setHours(0, 0, 0, 0);
-  return Array.from({ length: TRAILING_DAYS }, (_, i) => {
+  return Array.from({ length: DAYS_BEFORE + DAYS_AFTER + 1 }, (_, i) => {
     const d = new Date(base);
-    d.setDate(base.getDate() - (TRAILING_DAYS - 1 - i));
+    d.setDate(base.getDate() - DAYS_BEFORE + i);
     return d;
   });
 }
@@ -41,7 +44,12 @@ export function WeekStrip({
   onSelectDate: (date: Date) => void;
 }) {
   const now = new Date();
-  const dates = getTrailingDates(now);
+  const dates = getTwoWeekDates(now);
+  const todayRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    todayRef.current?.scrollIntoView({ inline: "center", block: "nearest" });
+  }, []);
 
   const months = Array.from(
     new Set(dates.map((d) => MONTH_LABELS[d.getMonth()])),
@@ -52,7 +60,7 @@ export function WeekStrip({
       <p className="text-[16px] font-semibold text-ink-muted">
         {months.join(" – ")} {now.getFullYear() + 543}
       </p>
-      <div className="flex items-center justify-between">
+      <div className="no-scrollbar flex gap-1 overflow-x-auto">
         {dates.map((date, i) => {
           const key = date.toDateString();
           const isToday = key === now.toDateString();
@@ -62,9 +70,10 @@ export function WeekStrip({
           return (
             <button
               key={i}
+              ref={isToday ? todayRef : undefined}
               type="button"
               onClick={() => onSelectDate(date)}
-              className="flex flex-col items-center gap-1"
+              className="flex w-10 flex-none flex-col items-center gap-1"
             >
               <span
                 className={`text-[11px] font-medium ${isToday ? "text-brand" : "text-ink-faint"}`}
