@@ -1,13 +1,26 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ScreenShell } from "../components/ScreenShell";
 import { PrimaryButton } from "../components/PrimaryButton";
+import { loginWithLine } from "../lib/liff";
+import { useAppState } from "../AppState";
 
 export function LoginPage() {
   const navigate = useNavigate();
+  const { lineProfile } = useAppState();
+
+  // A LINE session may already exist by the time this page renders — either
+  // the app is running inside the LINE client (which auto-authenticates on
+  // init, no button tap needed) or the user just completed the login
+  // redirect round-trip and landed back here. Either way, skip the button.
+  useEffect(() => {
+    if (lineProfile) navigate("/", { replace: true });
+  }, [lineProfile, navigate]);
 
   const handleLogin = () => {
-    // TODO: wire real LIFF login once the LINE channel exists (see CONTEXT.md).
-    navigate("/");
+    // Outside the LINE client this navigates the whole page away to LINE's
+    // login screen and back — control doesn't return here synchronously.
+    void loginWithLine();
   };
 
   return (
