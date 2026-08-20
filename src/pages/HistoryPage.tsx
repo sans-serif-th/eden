@@ -29,7 +29,13 @@ export function HistoryPage() {
     activeEnrollment.customStartDate,
   );
 
-  const lastDay = Math.min(currentDay, totalDays);
+  // A day studied ahead of schedule (see "เรียนล่วงหน้า" on Today) can have
+  // a record past currentDay — extend the listed range to cover it instead
+  // of always stopping at currentDay, or that record would never show here.
+  const recordedDayNumbers = Object.keys(activeEnrollment.dayRecords).map(Number);
+  const highestRecordedDay =
+    recordedDayNumbers.length > 0 ? Math.max(...recordedDayNumbers) : 0;
+  const lastDay = Math.min(Math.max(currentDay, highestRecordedDay), totalDays);
 
   const rows = useMemo(() => {
     const list = [];
@@ -55,7 +61,10 @@ export function HistoryPage() {
 
   const handleRowClick = (row: (typeof rows)[number]) => {
     if (row.done) navigate(`/history/${row.day}`);
-    else navigate(`/lesson/${row.day}/${row.resumeStep > 0 ? row.resumeStep : 1}`);
+    else
+      navigate(`/lesson/${row.day}/${row.resumeStep > 0 ? row.resumeStep : 1}`, {
+        state: { from: "history" },
+      });
   };
 
   return (
