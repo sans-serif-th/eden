@@ -46,6 +46,7 @@ function AppRoutes() {
       <Route path="/" element={<RootRoute />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/onboarding/:step" element={<OnboardingPage />} />
+      <Route path="/select-level" element={<SelectLevelPage />} />
       <Route path="/select-book" element={<SelectBookPage />} />
       <Route path="/new-plan" element={<NewPlanPage />} />
       <Route path="/today" element={<TodayPage />} />

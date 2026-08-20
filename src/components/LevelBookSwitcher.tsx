@@ -16,7 +16,7 @@ export function LevelBookSwitcher({
   return (
     <button
       type="button"
-      onClick={() => navigate("/")}
+      onClick={() => navigate("/select-level")}
       className="flex items-center gap-1.5 rounded-full border border-fieldline bg-surface py-1.5 pr-2.5 pl-3 text-[16px] font-semibold text-ink"
     >
       <span>{level?.label ?? "เลือกระดับ"}</span>
