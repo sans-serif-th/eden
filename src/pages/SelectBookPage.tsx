@@ -5,6 +5,11 @@ import { PrimaryButton } from "../components/PrimaryButton";
 import { getBook, levels } from "../data/books";
 import { useAppState } from "../AppState";
 
+const YEAR_1_UPCOMING_BOOK_NUMBERS = Array.from(
+  { length: 11 },
+  (_, i) => i + 2,
+);
+
 export function SelectBookPage() {
   const navigate = useNavigate();
   const { selectBook, pendingEnrollment, activeEnrollment } = useAppState();
@@ -40,6 +45,38 @@ export function SelectBookPage() {
               )}
             </div>
           </div>
+
+          {targetLevel === "year-1" && (
+            <div className="flex flex-col gap-2">
+              <p className="text-[16px] font-medium text-ink-muted">
+                เล่มถัดไปในปีที่ 1
+              </p>
+              <div className="grid grid-cols-3 gap-2">
+                {YEAR_1_UPCOMING_BOOK_NUMBERS.map((n) => {
+                  const upcomingBook = getBook("year-1", n);
+                  return (
+                    <div
+                      key={n}
+                      className={`flex flex-col items-center justify-center gap-0.5 rounded-2xl border border-fieldline bg-surface px-2 py-3 text-center ${
+                        !upcomingBook ? "opacity-60" : ""
+                      }`}
+                    >
+                      <span
+                        className={`text-[16px] font-semibold ${upcomingBook ? "text-ink" : "text-ink-faint"}`}
+                      >
+                        เล่มที่ {n}
+                      </span>
+                      <span className="text-[12px] text-ink-faint">
+                        {upcomingBook
+                          ? `${upcomingBook.totalDays} วัน`
+                          : "เร็ว ๆ นี้"}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="flex flex-col gap-3 p-6">
