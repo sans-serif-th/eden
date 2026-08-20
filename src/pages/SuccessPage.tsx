@@ -45,7 +45,7 @@ export function SuccessPage() {
         </div>
 
         <div className="flex w-full flex-col gap-3 p-6">
-          <OutlineButton onClick={() => navigate("/history")}>
+          <OutlineButton onClick={() => navigate(`/history/${day}`)}>
             ดูบันทึกของวันนี้
           </OutlineButton>
           <PrimaryButton onClick={() => navigate("/today")}>
