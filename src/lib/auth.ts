@@ -1,6 +1,32 @@
 import { supabase } from "./supabase";
 import { ensureLiffInit, getLiffIdToken, isLiffLoggedIn } from "./liff";
 
+const AUTH_TIMEOUT_MS = 8000;
+
+// liff.init() and the Supabase token exchange are both network calls with no
+// built-in timeout — if either hangs (flaky connection, a slow/misbehaving
+// endpoint), bootstrapAuth must still resolve so the app can fall back to
+// LoginPage instead of leaving the user stuck on a blank loading screen
+// forever.
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(
+      () => reject(new Error(`Timed out after ${ms}ms`)),
+      ms,
+    );
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (err) => {
+        clearTimeout(timer);
+        reject(err);
+      },
+    );
+  });
+}
+
 // A Supabase session persists in localStorage, but the LINE in-app browser's
 // storage is known to be dropped across full close/reopen cycles — so on a
 // fresh load we can't assume a prior session survived and must be ready to
@@ -22,16 +48,19 @@ export async function bootstrapAuth(): Promise<string | null> {
     return data.session.user.id;
   }
 
-  await ensureLiffInit();
+  await withTimeout(ensureLiffInit(), AUTH_TIMEOUT_MS);
   if (!(await isLiffLoggedIn())) return null;
 
   const idToken = getLiffIdToken();
   if (!idToken) return null;
 
-  const { data: signInData, error } = await supabase.auth.signInWithIdToken({
-    provider: "custom:line-login",
-    token: idToken,
-  });
+  const { data: signInData, error } = await withTimeout(
+    supabase.auth.signInWithIdToken({
+      provider: "custom:line-login",
+      token: idToken,
+    }),
+    AUTH_TIMEOUT_MS,
+  );
   if (error) throw error;
   return signInData.user?.id ?? null;
 }
