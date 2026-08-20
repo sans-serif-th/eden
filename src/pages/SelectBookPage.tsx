@@ -43,14 +43,14 @@ export function SelectBookPage() {
                   type="button"
                   disabled={!book}
                   onClick={() => setSelectedBookNumber(n)}
-                  className={`flex flex-col gap-2 rounded-[18px] border-2 p-[18px] text-left transition-colors disabled:cursor-not-allowed ${
+                  className={`flex items-center justify-between gap-3 rounded-2xl border-2 px-4 py-3.5 text-left transition-colors disabled:cursor-not-allowed ${
                     selected
                       ? "border-brand-accent bg-surface"
                       : "border-fieldline bg-surface"
                   } ${!book ? "opacity-60" : ""}`}
                 >
                   <p
-                    className={`text-[18px] font-semibold ${book ? "text-ink" : "text-ink-faint"}`}
+                    className={`text-[16px] font-semibold ${book ? "text-ink" : "text-ink-faint"}`}
                   >
                     คู่มือเฝ้าเดี่ยว เล่มที่ {n}
                   </p>
