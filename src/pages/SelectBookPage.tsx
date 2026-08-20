@@ -19,7 +19,7 @@ export function SelectBookPage() {
           <ScreenHeader title="เลือกเล่มที่เรียน" />
         </div>
         <div className="flex flex-1 flex-col gap-4 px-6 py-4">
-          <img src="/eden-logo.svg" alt="Eden" className="h-8 w-auto" />
+          <img src="/eden-logo.svg" alt="Eden" className="h-8 w-[99px]" />
           <h1 className="text-2xl font-semibold text-ink">
             เลือกเล่มที่กำลังเรียน
           </h1>
@@ -33,15 +33,9 @@ export function SelectBookPage() {
           </p>
 
           <div className="flex flex-col gap-2">
-            <span className="text-[16px] font-medium text-ink">
-              คู่มือเฝ้าเดี่ยว
-            </span>
             <div className="flex flex-col gap-2 rounded-[18px] border-2 border-brand-accent bg-surface p-[18px]">
               <p className="text-[18px] font-semibold text-ink">
-                {book?.title ?? "—"}
-              </p>
-              <p className="text-[16px] text-ink-muted">
-                {book?.description ?? "ยังไม่มีเนื้อหาสำหรับระดับนี้"}
+                {book ? `คู่มือเฝ้าเดี่ยว ${book.title}` : "—"}
               </p>
               {book && (
                 <p className="text-[16px] font-medium text-brand-accent">
