@@ -94,7 +94,7 @@ export function StatsPage() {
                     e.target.value,
                   )
                 }
-                className="h-14 w-full rounded-2xl border border-fieldline bg-surface px-4 text-[16px] font-medium text-ink focus:border-brand-accent focus:outline-none"
+                className="box-border h-14 w-full max-w-full rounded-2xl border border-fieldline bg-surface px-4 text-[16px] font-medium text-ink focus:border-brand-accent focus:outline-none"
               />
             )}
             <PrimaryButton onClick={() => setIsEditingPlan(false)}>

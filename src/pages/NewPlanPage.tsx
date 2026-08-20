@@ -140,7 +140,7 @@ export function NewPlanPage() {
                 value={customStartDate}
                 min={new Date().toISOString().slice(0, 10)}
                 onChange={(e) => setCustomStartDate(e.target.value)}
-                className="h-14 w-full rounded-2xl border border-fieldline bg-surface px-4 text-[16px] font-medium text-ink focus:border-brand-accent focus:outline-none"
+                className="box-border h-14 w-full max-w-full rounded-2xl border border-fieldline bg-surface px-4 text-[16px] font-medium text-ink focus:border-brand-accent focus:outline-none"
               />
             )}
           </div>
@@ -202,17 +202,20 @@ export function NewPlanPage() {
           <ScreenHeader title="ตั้งแผนการเฝ้าเดี่ยวใหม่" />
         </div>
         <div className="flex flex-1 flex-col gap-4 px-6 py-4">
-          <p className="rounded-2xl bg-surface-tint px-4 py-3 text-[16px] text-brand-accent">
-            {isLevelSwitch ? (
-              <>คุณกำลังเปลี่ยนไปเรียน {levelLabel}</>
-            ) : (
-              <>
-                คุณกำลังจะเริ่ม {targetBook?.title ?? `เล่มที่ ${pendingEnrollment.book}`}{" "}
-                ต่อจาก {levelLabel}
-              </>
-            )}{" "}
-            — แผนเดิมจะถูกเก็บไว้ (ไม่ลบข้อมูลที่เคยบันทึก) และเริ่มนับวันใหม่ตามแผนนี้
-          </p>
+          <div className="flex flex-col gap-2 rounded-2xl bg-surface-tint px-4 py-3">
+            <p className="text-[16px] text-brand-accent">
+              คุณกำลังเปลี่ยนไปเรียนเนื้อหาของ{" "}
+              <span className="font-semibold">
+                {levelLabel}{" "}
+                {targetBook?.title ?? `เล่มที่ ${pendingEnrollment.book}`}
+              </span>
+            </p>
+            <p className="text-[16px] text-ink-muted">
+              บันทึกการเฝ้าเดี่ยวของแผนเดิมจะถูกเก็บไว้ในระบบ
+              <br />
+              คุณสามารถสลับกลับมาที่แผนเดิมได้ทุกเมื่อ
+            </p>
+          </div>
 
           {!targetBook ? (
             <p className="text-[16px] text-ink-muted">
@@ -237,7 +240,7 @@ export function NewPlanPage() {
                   value={customStartDate}
                   min={new Date().toISOString().slice(0, 10)}
                   onChange={(e) => setCustomStartDate(e.target.value)}
-                  className="h-14 w-full rounded-2xl border border-fieldline bg-surface px-4 text-[16px] font-medium text-ink focus:border-brand-accent focus:outline-none"
+                  className="box-border h-14 w-full max-w-full rounded-2xl border border-fieldline bg-surface px-4 text-[16px] font-medium text-ink focus:border-brand-accent focus:outline-none"
                 />
               )}
             </>
