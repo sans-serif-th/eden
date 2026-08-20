@@ -63,9 +63,6 @@ export function HistoryPage() {
       <div className="flex flex-1 flex-col">
         <div className="flex flex-1 flex-col gap-3 px-6 pt-4 pb-[140px]">
           <h1 className="text-[26px] font-semibold text-ink">ประวัติของฉัน</h1>
-          <p className="text-[16px] font-medium text-brand-accent">
-            {book?.title ?? "—"}
-          </p>
 
           <div className="flex items-center justify-between">
             <p className="text-[16px] font-semibold text-ink">
