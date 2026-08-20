@@ -40,7 +40,10 @@ export function TodayPage() {
 
   const handleCta = () => {
     if (doneToday) navigate(`/history/${currentDay}`);
-    else navigate(`/lesson/${currentDay}/${notStarted ? 1 : currentStep}`);
+    else
+      navigate(`/lesson/${currentDay}/${notStarted ? 1 : currentStep}`, {
+        state: { from: "today" },
+      });
   };
 
   const handleStartNextBook = () => {
@@ -266,6 +269,7 @@ export function TodayPage() {
                     ? navigate(`/history/${selectedDayNumber}`)
                     : navigate(
                         `/lesson/${selectedDayNumber}/${selectedDayStep > 0 ? selectedDayStep : 1}`,
+                        { state: { from: "today" } },
                       )
                 }
               >

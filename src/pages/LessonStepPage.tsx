@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ScreenShell } from "../components/ScreenShell";
 import { ScreenHeader } from "../components/ScreenHeader";
 import { StepHeader } from "../components/StepHeader";
@@ -18,11 +18,18 @@ const UNDERSTANDING_STEP = 4;
 export function LessonStepPage() {
   const { day: dayParam, step: stepParam } = useParams();
   const navigate = useNavigate();
-  const { currentDay, activeEnrollment, setDayAnswer, completeStep } =
-    useAppState();
+  const location = useLocation();
+  const { activeEnrollment, setDayAnswer, completeStep } = useAppState();
+
+  // Which page linked into this lesson — set by TodayPage/HistoryPage when
+  // they navigate here — so the back button returns to where the user
+  // actually came from instead of guessing from the day number (a day
+  // opened via "เรียนล่วงหน้า" on Today isn't the current day, but the user
+  // still came from Today, not History).
+  const cameFrom: "today" | "history" =
+    location.state?.from === "history" ? "history" : "today";
 
   const dayNumber = Number(dayParam);
-  const isToday = dayNumber === currentDay;
   const answers = activeEnrollment.dayRecords[dayNumber]?.answers ?? {};
 
   const stepNumber = Number(stepParam);
@@ -43,6 +50,7 @@ export function LessonStepPage() {
     ) {
       navigate(`/lesson/${dayNumber}/${UNDERSTANDING_STEP + 1}`, {
         replace: true,
+        state: location.state,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -113,7 +121,7 @@ export function LessonStepPage() {
     if (next === UNDERSTANDING_STEP && !hasUnderstandingStep(dayContent)) {
       next += 1;
     }
-    navigate(`/lesson/${dayNumber}/${next}`);
+    navigate(`/lesson/${dayNumber}/${next}`, { state: location.state });
   };
 
   const handleBack = () => {
@@ -122,7 +130,7 @@ export function LessonStepPage() {
     if (prev === UNDERSTANDING_STEP && !hasUnderstandingStep(dayContent)) {
       prev -= 1;
     }
-    navigate(`/lesson/${dayNumber}/${prev}`);
+    navigate(`/lesson/${dayNumber}/${prev}`, { state: location.state });
   };
 
   return (
@@ -133,8 +141,9 @@ export function LessonStepPage() {
             <StepHeader
               step={stepNumber}
               total={TOTAL_STEPS}
-              backTo={isToday ? "/today" : "/history"}
-              backLabel={isToday ? "วันนี้" : "ประวัติ"}
+              backTo={cameFrom === "history" ? "/history" : "/today"}
+              backLabel={cameFrom === "history" ? "ประวัติ" : "วันนี้"}
+              showStepCount={step.slug !== "journal"}
             />
 
             <h1 className="text-[25px] font-semibold text-ink">

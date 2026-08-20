@@ -5,11 +5,13 @@ export function StepHeader({
   total,
   backTo = "/today",
   backLabel = "วันนี้",
+  showStepCount = true,
 }: {
   step: number;
   total: number;
   backTo?: string;
   backLabel?: string;
+  showStepCount?: boolean;
 }) {
   const navigate = useNavigate();
   return (
@@ -21,9 +23,11 @@ export function StepHeader({
       >
         ‹ {backLabel}
       </button>
-      <span className="text-ink-muted">
-        ขั้นที่ {step} จาก {total}
-      </span>
+      {showStepCount && (
+        <span className="text-ink-muted">
+          ขั้นที่ {step} จาก {total}
+        </span>
+      )}
     </div>
   );
 }
