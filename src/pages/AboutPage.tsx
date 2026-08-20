@@ -1,7 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import { ScreenShell } from "../components/ScreenShell";
 import { ScreenHeader } from "../components/ScreenHeader";
 
 export function AboutPage() {
+  const navigate = useNavigate();
   return (
     <ScreenShell>
       <div className="relative flex flex-1 flex-col overflow-hidden">
@@ -12,7 +14,10 @@ export function AboutPage() {
         />
         <div className="absolute inset-x-0 top-0 h-[340px] bg-gradient-to-b from-app from-55% to-transparent" />
         <div className="relative px-6 pt-4">
-          <ScreenHeader title="เกี่ยวกับเรา" />
+          <ScreenHeader
+            title="เกี่ยวกับเรา"
+            onBack={() => navigate("/")}
+          />
         </div>
         <div className="relative flex flex-col items-center gap-4 px-6 pt-8 text-center">
           <img
