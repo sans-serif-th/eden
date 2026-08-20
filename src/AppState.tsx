@@ -56,6 +56,10 @@ type DevotionState = {
   lineProfile: LineProfile | null;
   onboardingComplete: boolean;
   onboarding: OnboardingAnswers;
+  acceptedTerms: boolean;
+  acceptedPrivacy: boolean;
+  setAcceptedTerms: (value: boolean) => void;
+  setAcceptedPrivacy: (value: boolean) => void;
   activeEnrollment: Enrollment;
   pastEnrollments: Enrollment[];
   pendingEnrollment: PendingEnrollment | null;
@@ -203,6 +207,11 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [onboardingComplete, setOnboardingComplete] = useState(false);
   const [onboarding, setOnboarding] =
     useState<OnboardingAnswers>(defaultOnboarding);
+  // Consent to the ToS/PDPA notice is gated purely in the UI (the final
+  // onboarding step won't let the user past it), so it doesn't need to
+  // survive past onboardingComplete becoming true — no DB persistence.
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
   const [activeEnrollment, setActiveEnrollment] = useState<Enrollment>(() =>
     newEnrollment("year-1", 1),
   );
@@ -310,6 +319,10 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     lineProfile,
     onboardingComplete,
     onboarding,
+    acceptedTerms,
+    acceptedPrivacy,
+    setAcceptedTerms,
+    setAcceptedPrivacy,
     activeEnrollment,
     pastEnrollments,
     pendingEnrollment,

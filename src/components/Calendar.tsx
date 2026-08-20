@@ -85,17 +85,41 @@ export function Calendar({
   return (
     <div className="flex flex-col gap-2.5">
       <div className="flex items-center justify-between">
-        <p className="text-[16px] font-semibold text-ink-muted">
-          {mode === "week"
-            ? Array.from(
-                new Set(
-                  Array.from({ length: 7 }, (_, i) =>
-                    MONTH_LABELS[addDays(weekAnchor, i).getMonth()],
+        <div className="flex items-center gap-1">
+          {mode === "month" && (
+            <button
+              type="button"
+              onClick={() => setMonthAnchor(addMonths(monthAnchor, -1))}
+              disabled={isSameMonth(monthAnchor, rangeStart)}
+              aria-label="เดือนก่อนหน้า"
+              className="flex size-6 items-center justify-center text-ink-muted disabled:opacity-20"
+            >
+              <ChevronLeft size={16} />
+            </button>
+          )}
+          <p className="text-[16px] font-semibold text-ink-muted">
+            {mode === "week"
+              ? Array.from(
+                  new Set(
+                    Array.from({ length: 7 }, (_, i) =>
+                      MONTH_LABELS[addDays(weekAnchor, i).getMonth()],
+                    ),
                   ),
-                ),
-              ).join(" – ") + ` ${weekAnchor.getFullYear() + 543}`
-            : `${MONTH_LABELS[monthAnchor.getMonth()]} ${monthAnchor.getFullYear() + 543}`}
-        </p>
+                ).join(" – ") + ` ${weekAnchor.getFullYear() + 543}`
+              : `${MONTH_LABELS[monthAnchor.getMonth()]} ${monthAnchor.getFullYear() + 543}`}
+          </p>
+          {mode === "month" && (
+            <button
+              type="button"
+              onClick={() => setMonthAnchor(addMonths(monthAnchor, 1))}
+              disabled={isSameMonth(monthAnchor, rangeEnd)}
+              aria-label="เดือนถัดไป"
+              className="flex size-6 items-center justify-center text-ink-muted disabled:opacity-20"
+            >
+              <ChevronRight size={16} />
+            </button>
+          )}
+        </div>
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -188,35 +212,15 @@ export function Calendar({
         </div>
       ) : (
         <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <button
-              type="button"
-              onClick={() => setMonthAnchor(addMonths(monthAnchor, -1))}
-              disabled={isSameMonth(monthAnchor, rangeStart)}
-              aria-label="เดือนก่อนหน้า"
-              className="flex size-7 items-center justify-center text-ink-muted disabled:opacity-20"
-            >
-              <ChevronLeft size={18} />
-            </button>
-            <div className="grid flex-1 grid-cols-7 text-center">
-              {DAY_LABELS.map((label) => (
-                <span
-                  key={label}
-                  className="text-[11px] font-medium text-ink-faint"
-                >
-                  {label}
-                </span>
-              ))}
-            </div>
-            <button
-              type="button"
-              onClick={() => setMonthAnchor(addMonths(monthAnchor, 1))}
-              disabled={isSameMonth(monthAnchor, rangeEnd)}
-              aria-label="เดือนถัดไป"
-              className="flex size-7 items-center justify-center text-ink-muted disabled:opacity-20"
-            >
-              <ChevronRight size={18} />
-            </button>
+          <div className="grid grid-cols-7 text-center">
+            {DAY_LABELS.map((label) => (
+              <span
+                key={label}
+                className="text-[11px] font-medium text-ink-faint"
+              >
+                {label}
+              </span>
+            ))}
           </div>
           <div className="grid grid-cols-7 gap-y-1.5">
             {(() => {

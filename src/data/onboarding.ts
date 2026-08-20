@@ -1,4 +1,4 @@
-export const ONBOARDING_TOTAL_STEPS = 6;
+export const ONBOARDING_TOTAL_STEPS = 7;
 
 export const placeOptions = ["บ้าน", "ที่ทำงาน", "คริสตจักร", "อื่นๆ"];
 

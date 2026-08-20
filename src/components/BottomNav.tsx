@@ -1,4 +1,4 @@
-import { BookOpen, Gauge, History, User } from "lucide-react";
+import { BookOpen, TrendingUp, History, User } from "lucide-react";
 import { Link } from "react-router-dom";
 
 type NavKey = "today" | "books" | "history" | "profile";
@@ -10,7 +10,7 @@ const items: {
   to?: string;
 }[] = [
   { key: "today", label: "วันนี้", icon: BookOpen, to: "/today" },
-  { key: "books", label: "ภาพรวม", icon: Gauge, to: "/stats" },
+  { key: "books", label: "ภาพรวม", icon: TrendingUp, to: "/stats" },
   { key: "history", label: "ประวัติ", icon: History, to: "/history" },
   { key: "profile", label: "โปรไฟล์", icon: User, to: "/profile" },
 ];

@@ -13,6 +13,8 @@ import { DaySummaryPage } from "./pages/DaySummaryPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { AboutPage } from "./pages/AboutPage";
+import { TermsPage } from "./pages/TermsPage";
+import { PrivacyPage } from "./pages/PrivacyPage";
 import { StatsPage } from "./pages/StatsPage";
 
 function RootRoute() {
@@ -58,6 +60,8 @@ function AppRoutes() {
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/settings" element={<SettingsPage />} />
       <Route path="/about" element={<AboutPage />} />
+      <Route path="/terms" element={<TermsPage />} />
+      <Route path="/privacy" element={<PrivacyPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
