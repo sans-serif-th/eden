@@ -91,7 +91,7 @@ type DevotionState = {
     },
   ) => Promise<void>;
   cancelPendingEnrollment: () => void;
-  selectBook: () => void;
+  selectBook: (book: number) => void;
   setDayAnswer: (day: number, key: string, value: string) => void;
   completeStep: (day: number, step: number) => void;
   logout: () => void;
@@ -444,7 +444,18 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       }
     },
     cancelPendingEnrollment: () => setPendingEnrollment(null),
-    selectBook: () => setBookSelected(true),
+    selectBook: (book) => {
+      if (pendingEnrollment) {
+        setPendingEnrollment((prev) => (prev ? { ...prev, book } : prev));
+      } else {
+        setActiveEnrollment((prev) => {
+          const next = { ...prev, book };
+          if (userId) void upsertEnrollment(userId, next, true);
+          return next;
+        });
+      }
+      setBookSelected(true);
+    },
     setDayAnswer: (day, key, val) => {
       setActiveEnrollment((prev) => {
         const nextAnswers = {
