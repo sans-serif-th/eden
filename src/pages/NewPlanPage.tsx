@@ -8,6 +8,8 @@ import { startOptions, type StartPreference } from "../data/onboarding";
 import { getBook, levels } from "../data/books";
 import { useAppState } from "../AppState";
 
+type ResumeStage = "choice" | "date-mode" | "custom-date";
+
 export function NewPlanPage() {
   const navigate = useNavigate();
   const {
@@ -34,6 +36,7 @@ export function NewPlanPage() {
       )
     : undefined;
   const [wantsFreshStart, setWantsFreshStart] = useState(false);
+  const [resumeStage, setResumeStage] = useState<ResumeStage>("choice");
 
   useEffect(() => {
     // Only guard against landing here directly with nothing pending (e.g. a
@@ -64,13 +67,98 @@ export function NewPlanPage() {
     navigate("/today");
   };
 
-  const handleResume = () => {
+  const handleResume = (useNewDate: boolean) => {
     if (!matchingArchived) return;
     setIsResuming(true);
-    void resumeArchivedEnrollment(matchingArchived.id).then(() => {
+    void resumeArchivedEnrollment(
+      matchingArchived.id,
+      useNewDate ? { startPreference, customStartDate } : undefined,
+    ).then(() => {
       navigate("/today");
     });
   };
+
+  if (matchingArchived && !wantsFreshStart && resumeStage === "date-mode") {
+    return (
+      <ScreenShell>
+        <div className="flex flex-1 flex-col">
+          <div className="px-6">
+            <ScreenHeader title="ตั้งแผนการเฝ้าเดี่ยวใหม่" />
+          </div>
+          <div className="flex flex-1 flex-col gap-4 px-6 py-4">
+            <h1 className="text-2xl font-semibold text-ink">
+              ใช้วันที่เริ่มต้นแบบไหน
+            </h1>
+            <p className="text-[16px] text-ink-muted">
+              คำตอบและบันทึกที่เคยทำไว้จะยังอยู่ครบไม่ว่าจะเลือกแบบไหน
+            </p>
+          </div>
+          <div className="flex flex-col gap-3 p-6">
+            <PrimaryButton
+              onClick={() => handleResume(false)}
+              disabled={isResuming}
+            >
+              ใช้วันที่เริ่มต้นของแผนเดิม
+            </PrimaryButton>
+            <OutlineButton onClick={() => setResumeStage("custom-date")}>
+              ตั้งค่าวันเริ่มต้นแผนใหม่
+            </OutlineButton>
+            <OutlineButton onClick={() => setResumeStage("choice")}>
+              ย้อนกลับ
+            </OutlineButton>
+          </div>
+        </div>
+      </ScreenShell>
+    );
+  }
+
+  if (matchingArchived && !wantsFreshStart && resumeStage === "custom-date") {
+    return (
+      <ScreenShell>
+        <div className="flex flex-1 flex-col">
+          <div className="px-6">
+            <ScreenHeader title="ตั้งแผนการเฝ้าเดี่ยวใหม่" />
+          </div>
+          <div className="flex flex-1 flex-col gap-4 px-6 py-4">
+            <h1 className="text-2xl font-semibold text-ink">
+              ต้องการเริ่มแผนใหม่เมื่อไหร่
+            </h1>
+            <p className="text-[16px] text-ink-muted">
+              วัน 1 จะกลายเป็นวันที่เลือกนี้ ส่วนคำตอบและบันทึกที่เคยทำไว้ในแต่ละวันยังอยู่ครบ
+            </p>
+            <OptionGroup
+              options={startOptions.map((o) => o.value)}
+              value={startPreference}
+              onChange={setStartPreference}
+              formatLabel={(v) =>
+                startOptions.find((o) => o.value === v)?.label ?? v
+              }
+            />
+            {startPreference === "custom" && (
+              <input
+                type="date"
+                value={customStartDate}
+                min={new Date().toISOString().slice(0, 10)}
+                onChange={(e) => setCustomStartDate(e.target.value)}
+                className="h-14 w-full rounded-2xl border border-fieldline bg-surface px-4 text-[16px] font-medium text-ink focus:border-brand-accent focus:outline-none"
+              />
+            )}
+          </div>
+          <div className="flex flex-col gap-3 p-6">
+            <PrimaryButton
+              onClick={() => handleResume(true)}
+              disabled={isResuming}
+            >
+              เริ่มแผนใหม่
+            </PrimaryButton>
+            <OutlineButton onClick={() => setResumeStage("date-mode")}>
+              ย้อนกลับ
+            </OutlineButton>
+          </div>
+        </div>
+      </ScreenShell>
+    );
+  }
 
   if (matchingArchived && !wantsFreshStart) {
     return (
@@ -94,7 +182,7 @@ export function NewPlanPage() {
             </p>
           </div>
           <div className="flex flex-col gap-3 p-6">
-            <PrimaryButton onClick={handleResume} disabled={isResuming}>
+            <PrimaryButton onClick={() => setResumeStage("date-mode")}>
               ใช้ความคืบหน้าเดิม
             </PrimaryButton>
             <OutlineButton onClick={() => setWantsFreshStart(true)}>
