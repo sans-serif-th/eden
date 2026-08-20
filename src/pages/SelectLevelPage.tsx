@@ -23,7 +23,7 @@ export function SelectLevelPage() {
           <ScreenHeader title="เลือกระดับ" />
         </div>
         <div className="flex flex-1 flex-col gap-4 px-6 py-4">
-          <img src="/eden-logo.svg" alt="Eden" className="h-8 w-auto" />
+          <img src="/eden-logo.svg" alt="Eden" className="h-8 w-[99px]" />
           <h1 className="text-2xl font-semibold text-ink">
             เลือกระดับที่ต้องการเรียน
           </h1>
