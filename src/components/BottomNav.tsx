@@ -1,4 +1,4 @@
-import { TreeDeciduous, Gauge, History, User } from "lucide-react";
+import { BookOpen, Gauge, History, User } from "lucide-react";
 import { Link } from "react-router-dom";
 
 type NavKey = "today" | "books" | "history" | "profile";
@@ -6,10 +6,10 @@ type NavKey = "today" | "books" | "history" | "profile";
 const items: {
   key: NavKey;
   label: string;
-  icon: typeof TreeDeciduous;
+  icon: typeof BookOpen;
   to?: string;
 }[] = [
-  { key: "today", label: "วันนี้", icon: TreeDeciduous, to: "/today" },
+  { key: "today", label: "วันนี้", icon: BookOpen, to: "/today" },
   { key: "books", label: "ภาพรวม", icon: Gauge, to: "/stats" },
   { key: "history", label: "ประวัติ", icon: History, to: "/history" },
   { key: "profile", label: "โปรไฟล์", icon: User, to: "/profile" },
