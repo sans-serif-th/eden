@@ -17,6 +17,15 @@ export function SelectBookPage() {
   const [selectedBookNumber, setSelectedBookNumber] = useState(1);
   const selectedBook = getBook(targetLevel, selectedBookNumber);
 
+  // Only the active Enrollment's dayRecords are loaded client-side (archived
+  // Enrollments load lazily on resume) — days-studied can only be shown
+  // accurately for whichever book is currently active.
+  const activeDaysStudied = Object.values(activeEnrollment.dayRecords).filter(
+    (r) => r.status === "done",
+  ).length;
+  const isActiveBook = (n: number) =>
+    targetLevel === activeEnrollment.level && n === activeEnrollment.book;
+
   return (
     <ScreenShell>
       <div className="flex flex-1 flex-col">
@@ -56,7 +65,8 @@ export function SelectBookPage() {
                   </p>
                   {book ? (
                     <p className="text-[16px] font-medium text-brand-accent">
-                      0 / {book.totalDays} วัน
+                      {isActiveBook(n) ? activeDaysStudied : 0} /{" "}
+                      {book.totalDays} วัน
                     </p>
                   ) : (
                     <p className="text-[16px] font-medium text-ink-faint">
