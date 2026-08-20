@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ScreenShell } from "../components/ScreenShell";
+import { ScreenHeader } from "../components/ScreenHeader";
 import { StepHeader } from "../components/StepHeader";
 import { ProgressBar } from "../components/ProgressBar";
 import { OutlineButton, PrimaryButton } from "../components/PrimaryButton";
@@ -58,7 +59,25 @@ export function LessonStepPage() {
     answers[`${stepNumber}-journal-1`] ?? "",
   ]);
 
-  if (!step || !dayContent) return null;
+  // Reachable if content isn't authored yet for this Day (see Day readiness
+  // in CONTEXT.md) even though callers should already be checking first —
+  // never render a blank screen here as the last line of defense.
+  if (!step || !dayContent) {
+    return (
+      <ScreenShell>
+        <div className="flex flex-1 flex-col">
+          <div className="px-6">
+            <ScreenHeader title="บทเรียนนี้ยังไม่พร้อมใช้งาน" />
+          </div>
+          <div className="flex flex-1 flex-col gap-3 px-6 py-4">
+            <p className="text-[16px] text-ink-muted">
+              กรุณารอการอัปเดตเนื้อหา แล้วกลับมาใหม่อีกครั้ง
+            </p>
+          </div>
+        </div>
+      </ScreenShell>
+    );
+  }
 
   // These three steps ask the user to write something — block continuing
   // past them with a blank answer instead of silently saving nothing.
