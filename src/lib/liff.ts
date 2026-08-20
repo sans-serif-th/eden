@@ -50,9 +50,18 @@ export async function getLineProfile(): Promise<LineProfile | null> {
 // Outside the LINE client this redirects the whole page to LINE's login
 // screen and back — nothing after this call runs until that round-trip
 // completes on the next page load, so don't await it expecting a return value.
+//
+// Always force a fresh login rather than trusting the cached isLoggedIn()
+// flag: LINE can revoke the underlying access token server-side (seen after
+// repeated rapid re-auth attempts) while LIFF's local state still reports
+// logged-in, which would silently no-op this button and strand the user on
+// LoginPage with no way to recover short of clearing app storage by hand.
+// This function only ever runs from an explicit button tap, so a full
+// logout+login cycle here is never wasted work.
 export async function loginWithLine() {
   await ensureLiffInit();
-  if (!liff.isLoggedIn()) liff.login();
+  if (liff.isLoggedIn()) liff.logout();
+  liff.login();
 }
 
 export async function logoutFromLine() {
