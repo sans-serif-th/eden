@@ -56,13 +56,18 @@ export async function bootstrapAuth(): Promise<string | null> {
   if (data.session && !data.session.user.is_anonymous) {
     return data.session.user.id;
   }
-  if (sessionError) {
-    // getSession() tried to silently refresh an expired access token and
-    // the server rejected the stored refresh token (already rotated/
-    // revoked — seen live after repeated testing). supabase-js doesn't
-    // always clear its own storage when that happens, so a poisoned
-    // session can keep getting retried and rejected on every load. Force
-    // a clean local slate before falling through to a fresh LINE sign-in.
+  if (sessionError || data.session?.user.is_anonymous) {
+    // Either getSession() tried to silently refresh an expired access
+    // token and the server rejected the stored (already rotated/revoked)
+    // refresh token, or there's a leftover anonymous session — both must
+    // be cleared before the LINE sign-in below, not just skipped. Leaving
+    // an anonymous session active means signInWithIdToken gets sent with
+    // its Authorization header attached, which makes Supabase treat this
+    // as *linking* the new LINE identity onto that anonymous account
+    // instead of a plain sign-in — and linking requires a verified email,
+    // which LINE never provides, so it always fails with "Unverified
+    // email with custom:line-login" even though brand-new sign-ins are
+    // configured to allow a missing email.
     await supabase.auth.signOut();
   }
 
