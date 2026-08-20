@@ -38,7 +38,7 @@ export function SettingsPage() {
   return (
     <ScreenShell>
       <div className="flex flex-1 flex-col">
-        <div className="px-6">
+        <div className="sticky top-0 z-10 bg-app px-6">
           <ScreenHeader title="แก้ไขข้อมูลเฝ้าเดี่ยว" />
         </div>
         <div className="flex flex-1 flex-col gap-2 overflow-y-auto px-6 py-4">

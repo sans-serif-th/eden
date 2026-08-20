@@ -29,10 +29,10 @@ export function SelectBookPage() {
   return (
     <ScreenShell>
       <div className="flex flex-1 flex-col">
-        <div className="px-6">
+        <div className="sticky top-0 z-10 bg-app px-6">
           <ScreenHeader title="แผนการเรียน" />
         </div>
-        <div className="flex flex-1 flex-col gap-4 px-6 py-4">
+        <div className="flex flex-1 flex-col gap-4 px-6 pt-4 pb-[120px]">
           <img src="/eden-logo.svg" alt="Eden" className="h-8 w-[99px]" />
           <h1 className="text-2xl font-semibold text-ink">
             เลือกเล่มที่กำลังเรียน
@@ -79,7 +79,7 @@ export function SelectBookPage() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 p-6">
+        <div className="fixed bottom-0 left-1/2 w-full max-w-[430px] -translate-x-1/2 bg-app p-6">
           <PrimaryButton
             disabled={!selectedBook}
             onClick={() => {
