@@ -88,10 +88,17 @@ export function ProfilePage() {
             </button>
             <button
               type="button"
-              disabled
-              className="border-t border-hairline px-4 py-3.5 text-left text-[16px] text-ink-faint"
+              onClick={() => navigate("/terms")}
+              className="border-t border-hairline px-4 py-3.5 text-left text-[16px] text-ink-muted"
             >
               เงื่อนไขการใช้บริการ
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate("/privacy")}
+              className="border-t border-hairline px-4 py-3.5 text-left text-[16px] text-ink-muted"
+            >
+              การคุ้มครองข้อมูลส่วนบุคคล (PDPA)
             </button>
           </div>
 
@@ -105,6 +112,9 @@ export function ProfilePage() {
               ออกจากระบบ
             </span>
           </button>
+          <p className="text-center text-[13px] text-ink-faint">
+            เวอร์ชัน {__APP_VERSION__}
+          </p>
         </div>
 
         <div className="p-6">

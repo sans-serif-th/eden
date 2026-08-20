@@ -23,6 +23,10 @@ export function OnboardingPage() {
     activeEnrollment,
     setActiveLevel,
     setEnrollmentStart,
+    acceptedTerms,
+    acceptedPrivacy,
+    setAcceptedTerms,
+    setAcceptedPrivacy,
   } = useAppState();
 
   const stepNumber = Number(stepParam);
@@ -30,9 +34,11 @@ export function OnboardingPage() {
     return null;
 
   const onboardingBook = getBook(activeEnrollment.level, 1);
+  const consentGiven = acceptedTerms && acceptedPrivacy;
 
   const handleContinue = () => {
     if (stepNumber >= ONBOARDING_TOTAL_STEPS) {
+      if (!consentGiven) return;
       completeOnboarding();
       navigate("/today");
     } else {
@@ -188,6 +194,56 @@ export function OnboardingPage() {
                 )}
               </>
             )}
+
+            {stepNumber === 7 && (
+              <>
+                <h1 className="text-2xl font-semibold text-ink">
+                  ก่อนเริ่มใช้งาน EDEN
+                </h1>
+                <p className="text-[16px] text-ink-muted">
+                  กรุณายอมรับเงื่อนไขและนโยบายด้านล่างก่อนเริ่มต้นใช้งาน
+                </p>
+                <div className="flex flex-col gap-3">
+                  <label className="flex items-start gap-3 rounded-2xl border border-fieldline bg-surface p-4">
+                    <input
+                      type="checkbox"
+                      checked={acceptedTerms}
+                      onChange={(e) => setAcceptedTerms(e.target.checked)}
+                      className="mt-0.5 size-5 shrink-0 accent-brand"
+                    />
+                    <span className="text-[16px] text-ink">
+                      ฉันยอมรับ
+                      <button
+                        type="button"
+                        onClick={() => navigate("/terms")}
+                        className="mx-1 font-medium text-brand-accent underline"
+                      >
+                        เงื่อนไขการใช้บริการ
+                      </button>
+                    </span>
+                  </label>
+                  <label className="flex items-start gap-3 rounded-2xl border border-fieldline bg-surface p-4">
+                    <input
+                      type="checkbox"
+                      checked={acceptedPrivacy}
+                      onChange={(e) => setAcceptedPrivacy(e.target.checked)}
+                      className="mt-0.5 size-5 shrink-0 accent-brand"
+                    />
+                    <span className="text-[16px] text-ink">
+                      ฉันรับทราบ
+                      <button
+                        type="button"
+                        onClick={() => navigate("/privacy")}
+                        className="mx-1 font-medium text-brand-accent underline"
+                      >
+                        นโยบายความเป็นส่วนตัวและ PDPA
+                      </button>
+                      และยินยอมให้ EDEN ประมวลผลข้อมูลส่วนบุคคลตามนโยบายดังกล่าว
+                    </span>
+                  </label>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
@@ -201,7 +257,10 @@ export function OnboardingPage() {
               </div>
             )}
             <div className="flex-1">
-              <PrimaryButton onClick={handleContinue}>
+              <PrimaryButton
+                onClick={handleContinue}
+                disabled={stepNumber >= ONBOARDING_TOTAL_STEPS && !consentGiven}
+              >
                 {stepNumber >= ONBOARDING_TOTAL_STEPS ? "เริ่มต้นใช้งาน" : "ถัดไป"}
               </PrimaryButton>
             </div>
