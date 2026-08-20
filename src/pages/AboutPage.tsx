@@ -10,10 +10,11 @@ export function AboutPage() {
           alt=""
           className="absolute inset-0 size-full object-cover"
         />
-        <div className="absolute inset-x-0 top-0 bg-gradient-to-b from-app via-app/70 to-transparent px-6 pt-4 pb-10">
+        <div className="absolute inset-x-0 top-0 h-[340px] bg-gradient-to-b from-app from-55% to-transparent" />
+        <div className="relative px-6 pt-4">
           <ScreenHeader title="เกี่ยวกับเรา" />
         </div>
-        <div className="relative flex flex-col items-center gap-4 px-6 pt-14 text-center">
+        <div className="relative flex flex-col items-center gap-4 px-6 pt-8 text-center">
           <img
             src="/eden-logo.svg"
             alt="Eden"
