@@ -2,40 +2,24 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronRight, Sprout } from "lucide-react";
 import { ScreenShell } from "../components/ScreenShell";
-import { ProgressBar } from "../components/ProgressBar";
 import { BottomNav } from "../components/BottomNav";
 import { getBook } from "../data/books";
 import { getDayContent } from "../data/dayContent";
 import { getPlanStartDate } from "../data/onboarding";
 import { useAppState } from "../AppState";
 
-const THAI_MONTHS_FULL = [
-  "มกราคม",
-  "กุมภาพันธ์",
-  "มีนาคม",
-  "เมษายน",
-  "พฤษภาคม",
-  "มิถุนายน",
-  "กรกฎาคม",
-  "สิงหาคม",
-  "กันยายน",
-  "ตุลาคม",
-  "พฤศจิกายน",
-  "ธันวาคม",
+type StatusFilter = "all" | "done" | "not-done";
+
+const STATUS_OPTIONS: { value: StatusFilter; label: string }[] = [
+  { value: "all", label: "ทั้งหมด" },
+  { value: "done", label: "บันทึกแล้ว" },
+  { value: "not-done", label: "ยังไม่ได้บันทึก" },
 ];
-
-function monthKey(date: Date) {
-  return `${date.getFullYear()}-${date.getMonth()}`;
-}
-
-function monthLabel(date: Date) {
-  return `${THAI_MONTHS_FULL[date.getMonth()]} ${date.getFullYear() + 543}`;
-}
 
 export function HistoryPage() {
   const navigate = useNavigate();
   const { activeEnrollment, currentDay } = useAppState();
-  const [monthFilter, setMonthFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
 
   const book = getBook(activeEnrollment.level, activeEnrollment.book);
   const totalDays = book?.totalDays ?? 0;
@@ -64,24 +48,10 @@ export function HistoryPage() {
     return list;
   }, [lastDay, startDate, activeEnrollment.level, activeEnrollment.book, activeEnrollment.dayRecords]);
 
-  const months = useMemo(() => {
-    const seen = new Map<string, Date>();
-    for (const row of rows) {
-      const key = monthKey(row.date);
-      if (!seen.has(key)) seen.set(key, row.date);
-    }
-    return [...seen.entries()];
-  }, [rows]);
-
   const filteredRows =
-    monthFilter === "all"
+    statusFilter === "all"
       ? rows
-      : rows.filter((row) => monthKey(row.date) === monthFilter);
-
-  const daysStudied = Object.values(activeEnrollment.dayRecords).filter(
-    (r) => r.status === "done",
-  ).length;
-  const percent = totalDays > 0 ? (daysStudied / totalDays) * 100 : 0;
+      : rows.filter((row) => (statusFilter === "done" ? row.done : !row.done));
 
   const handleRowClick = (row: (typeof rows)[number]) => {
     if (row.done) navigate(`/history/${row.day}`);
@@ -97,24 +67,18 @@ export function HistoryPage() {
             {book?.title ?? "—"}
           </p>
 
-          <div className="flex flex-col gap-3 rounded-[18px] bg-surface-tint px-[18px] py-4">
-            <p className="text-[17px] font-semibold text-ink">
-              ทำแล้ว {daysStudied} จาก {totalDays} บทเรียน
-            </p>
-            <ProgressBar percent={percent} thick />
-          </div>
-
           <div className="flex items-center justify-between">
-            <p className="text-[16px] font-semibold text-ink">รายวัน</p>
+            <p className="text-[16px] font-semibold text-ink">
+              {book?.title ?? "เล่มที่ 1"}
+            </p>
             <select
-              value={monthFilter}
-              onChange={(e) => setMonthFilter(e.target.value)}
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
               className="h-9 rounded-full border border-fieldline bg-surface px-3 text-[16px] font-medium text-ink focus:border-brand-accent focus:outline-none"
             >
-              <option value="all">ทุกเดือน</option>
-              {months.map(([key, date]) => (
-                <option key={key} value={key}>
-                  {monthLabel(date)}
+              {STATUS_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
                 </option>
               ))}
             </select>
@@ -122,7 +86,7 @@ export function HistoryPage() {
 
           <div className="flex flex-col gap-2">
             {filteredRows.length === 0 && (
-              <p className="text-[16px] text-ink-muted">ไม่มีรายการในเดือนนี้</p>
+              <p className="text-[16px] text-ink-muted">ไม่มีรายการ</p>
             )}
             {filteredRows.map((row) => (
               <button
