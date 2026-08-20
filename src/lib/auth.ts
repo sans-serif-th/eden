@@ -14,7 +14,13 @@ import { ensureLiffInit, getLiffIdToken, isLiffLoggedIn } from "./liff";
 // LoginPage in that case.
 export async function bootstrapAuth(): Promise<string | null> {
   const { data } = await supabase.auth.getSession();
-  if (data.session) return data.session.user.id;
+  // An anonymous session left over from before this app used real LINE
+  // identity (or from local dev outside the LINE client) is never the right
+  // session to keep reusing — always re-derive the LINE-linked identity
+  // instead of trusting it.
+  if (data.session && !data.session.user.is_anonymous) {
+    return data.session.user.id;
+  }
 
   await ensureLiffInit();
   if (!(await isLiffLoggedIn())) return null;
