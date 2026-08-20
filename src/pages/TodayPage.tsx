@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ScreenShell } from "../components/ScreenShell";
-import { PrimaryButton, OutlineButton } from "../components/PrimaryButton";
+import { PrimaryButton } from "../components/PrimaryButton";
 import { ProgressBar } from "../components/ProgressBar";
 import { BottomNav } from "../components/BottomNav";
 import { LevelBookSwitcher } from "../components/LevelBookSwitcher";
@@ -36,10 +36,10 @@ export function TodayPage() {
   const bookFinished = currentDay > totalDaysInBook;
   const activeStep = STEP_DEFINITIONS[Math.min(currentStep, TOTAL_STEPS) - 1];
 
-  const ctaLabel = notStarted ? "เริ่มเฝ้าเดี่ยว" : doneToday ? "ดูสรุปวันนี้" : "ทำต่อ";
+  const ctaLabel = notStarted ? "เริ่มบทเรียน" : doneToday ? "ดูบันทึก" : "ทำต่อ";
 
   const handleCta = () => {
-    if (doneToday) navigate("/success", { state: { day: currentDay } });
+    if (doneToday) navigate(`/history/${currentDay}`);
     else navigate(`/lesson/${currentDay}/${notStarted ? 1 : currentStep}`);
   };
 
@@ -75,10 +75,12 @@ export function TodayPage() {
   const selectedDayDone = selectedDayRecord?.status === "done";
   const selectedDayStep = selectedDayRecord?.currentStep ?? 0;
   const selectedDayCtaLabel = selectedDayDone
-    ? "ดูสรุป"
+    ? "ดูบันทึก"
     : selectedDayStep > 0
       ? "ทำต่อ"
-      : "เริ่มบทเรียนนี้";
+      : selectedDayNumber > currentDay
+        ? "เรียนล่วงหน้า"
+        : "เริ่มบทเรียน";
 
   // currentDay from AppState clamps to a minimum of 1 for safe content lookup,
   // so check the raw (unclamped) value here to know if the plan has actually started.
@@ -117,6 +119,7 @@ export function TodayPage() {
             doneDates={doneDates}
             selectedDate={selectedDate}
             onSelectDate={setSelectedDate}
+            onGoToToday={() => setSelectedDate(new Date())}
           />
         </div>
         <div className="flex flex-1 flex-col gap-4 px-6 py-4">
@@ -249,24 +252,19 @@ export function TodayPage() {
               <PrimaryButton onClick={handleCta}>{ctaLabel}</PrimaryButton>
             )
           ) : (
-            <>
-              {selectedDayContent && (
-                <PrimaryButton
-                  onClick={() =>
-                    selectedDayDone
-                      ? navigate(`/history/${selectedDayNumber}`)
-                      : navigate(
-                          `/lesson/${selectedDayNumber}/${selectedDayStep > 0 ? selectedDayStep : 1}`,
-                        )
-                  }
-                >
-                  {selectedDayCtaLabel}
-                </PrimaryButton>
-              )}
-              <OutlineButton onClick={() => setSelectedDate(new Date())}>
-                ไปที่วันนี้
-              </OutlineButton>
-            </>
+            selectedDayContent && (
+              <PrimaryButton
+                onClick={() =>
+                  selectedDayDone
+                    ? navigate(`/history/${selectedDayNumber}`)
+                    : navigate(
+                        `/lesson/${selectedDayNumber}/${selectedDayStep > 0 ? selectedDayStep : 1}`,
+                      )
+                }
+              >
+                {selectedDayCtaLabel}
+              </PrimaryButton>
+            )
           )}
           <BottomNav active="today" />
         </div>

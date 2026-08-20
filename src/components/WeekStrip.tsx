@@ -38,10 +38,12 @@ export function WeekStrip({
   doneDates,
   selectedDate,
   onSelectDate,
+  onGoToToday,
 }: {
   doneDates: Set<string>;
   selectedDate: Date;
   onSelectDate: (date: Date) => void;
+  onGoToToday: () => void;
 }) {
   const now = new Date();
   const dates = getTwoWeekDates(now);
@@ -57,9 +59,18 @@ export function WeekStrip({
 
   return (
     <div className="flex flex-col gap-2.5">
-      <p className="text-[16px] font-semibold text-ink-muted">
-        {months.join(" – ")} {now.getFullYear() + 543}
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="text-[16px] font-semibold text-ink-muted">
+          {months.join(" – ")} {now.getFullYear() + 543}
+        </p>
+        <button
+          type="button"
+          onClick={onGoToToday}
+          className="text-[16px] font-medium text-brand-accent"
+        >
+          วันนี้
+        </button>
+      </div>
       <div
         className="no-scrollbar flex select-none gap-2 overflow-x-auto overscroll-x-contain pb-1 [-webkit-overflow-scrolling:touch] [touch-action:pan-x]"
       >
