@@ -53,9 +53,6 @@ export function OnboardingPage() {
       <div className="flex h-dvh flex-col">
         <div className="flex-1 overflow-y-auto px-6 pt-14 pb-32">
           <div className="flex flex-col gap-4">
-            <p className="text-[16px] font-semibold text-brand">
-              เวลานัดหมายกับพระเจ้า
-            </p>
             <ProgressBar
               percent={(stepNumber / ONBOARDING_TOTAL_STEPS) * 100}
             />
