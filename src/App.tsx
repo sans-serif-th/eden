@@ -12,6 +12,7 @@ import { HistoryPage } from "./pages/HistoryPage";
 import { DaySummaryPage } from "./pages/DaySummaryPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { SettingsPage } from "./pages/SettingsPage";
+import { AboutPage } from "./pages/AboutPage";
 import { StatsPage } from "./pages/StatsPage";
 
 function RootRoute() {
@@ -51,6 +52,7 @@ function AppRoutes() {
       <Route path="/stats" element={<StatsPage />} />
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/settings" element={<SettingsPage />} />
+      <Route path="/about" element={<AboutPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

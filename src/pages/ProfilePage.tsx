@@ -1,4 +1,4 @@
-import { ChevronRight, LogOut, Settings } from "lucide-react";
+import { ChevronRight, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ScreenShell } from "../components/ScreenShell";
 import { BottomNav } from "../components/BottomNav";
@@ -7,12 +7,24 @@ import { useAppState } from "../AppState";
 
 export function ProfilePage() {
   const navigate = useNavigate();
-  const { lineProfile, logout } = useAppState();
+  const { lineProfile, onboarding, logout } = useAppState();
 
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
+
+  const settingsRows: { label: string; value: string }[] = [
+    {
+      label: "เวลาที่เหมาะสมที่สุด",
+      value: `${onboarding.preferredTime} น.`,
+    },
+    { label: "สถานที่ที่เหมาะสมที่สุด", value: onboarding.preferredPlace },
+    {
+      label: "ระยะเวลาที่ตั้งใจ",
+      value: `${onboarding.preferredDurationMinutes} นาที`,
+    },
+  ];
 
   return (
     <ScreenShell>
@@ -38,13 +50,48 @@ export function ProfilePage() {
             <button
               type="button"
               onClick={() => navigate("/settings")}
-              className="flex items-center gap-3 rounded-2xl border border-fieldline bg-surface px-4 py-3.5 text-left"
+              className="flex flex-col rounded-[18px] bg-surface text-left shadow-[0px_4px_12px_0px_rgba(0,0,0,0.06)]"
             >
-              <Settings size={20} className="text-brand-accent" />
-              <span className="flex-1 text-[16px] font-medium text-ink">
-                แก้ไขข้อมูลเฝ้าเดี่ยว
-              </span>
-              <ChevronRight size={18} className="text-ink-faint" />
+              {settingsRows.map((row, i) => (
+                <div
+                  key={row.label}
+                  className={`flex items-center justify-between gap-3 px-4 py-3.5 ${
+                    i > 0 ? "border-t border-hairline" : ""
+                  }`}
+                >
+                  <span className="text-[16px] text-ink-muted">
+                    {row.label}
+                  </span>
+                  <span className="flex items-center gap-1 text-[16px] font-medium text-ink">
+                    {row.value}
+                    <ChevronRight size={18} className="text-ink-faint" />
+                  </span>
+                </div>
+              ))}
+            </button>
+          </div>
+
+          <div className="flex flex-col rounded-[18px] bg-surface shadow-[0px_4px_12px_0px_rgba(0,0,0,0.06)]">
+            <button
+              type="button"
+              onClick={() => navigate("/about")}
+              className="px-4 py-3.5 text-left text-[16px] text-ink-muted"
+            >
+              เกี่ยวกับเรา
+            </button>
+            <button
+              type="button"
+              disabled
+              className="border-t border-hairline px-4 py-3.5 text-left text-[16px] text-ink-faint"
+            >
+              แจ้งปัญหา/สนับสนุน
+            </button>
+            <button
+              type="button"
+              disabled
+              className="border-t border-hairline px-4 py-3.5 text-left text-[16px] text-ink-faint"
+            >
+              เงื่อนไขการใช้บริการ
             </button>
           </div>
 

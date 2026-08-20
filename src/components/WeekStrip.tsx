@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Sprout } from "lucide-react";
+import { Check } from "lucide-react";
 
 // Indexed by Date#getDay() (0 = Sun .. 6 = Sat).
 const DAY_LABELS = ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"];
@@ -60,7 +60,9 @@ export function WeekStrip({
       <p className="text-[16px] font-semibold text-ink-muted">
         {months.join(" – ")} {now.getFullYear() + 543}
       </p>
-      <div className="no-scrollbar flex gap-1 overflow-x-auto">
+      <div
+        className="no-scrollbar flex select-none gap-2 overflow-x-auto overscroll-x-contain pb-1 [-webkit-overflow-scrolling:touch] [touch-action:pan-x]"
+      >
         {dates.map((date, i) => {
           const key = date.toDateString();
           const isToday = key === now.toDateString();
@@ -73,30 +75,37 @@ export function WeekStrip({
               ref={isToday ? todayRef : undefined}
               type="button"
               onClick={() => onSelectDate(date)}
-              className="flex w-10 flex-none flex-col items-center gap-1"
+              className={`relative flex h-[72px] w-11 flex-none flex-col items-center justify-center gap-1.5 rounded-full transition-colors ${
+                isSelected
+                  ? "bg-brand"
+                  : isToday
+                    ? "border-2 border-dashed border-brand-accent"
+                    : "border border-fieldline bg-surface"
+              }`}
             >
               <span
-                className={`text-[11px] font-medium ${isToday ? "text-brand" : "text-ink-faint"}`}
+                className={`text-[11px] font-medium ${
+                  isSelected
+                    ? "text-white/80"
+                    : isToday
+                      ? "text-brand"
+                      : "text-ink-faint"
+                }`}
               >
                 {DAY_LABELS[date.getDay()]}
               </span>
-              <div
-                className={`flex size-9 items-center justify-center rounded-full text-[16px] font-semibold transition-colors ${
-                  isDone
-                    ? "bg-brand text-white"
-                    : isToday
-                      ? "border-2 border-brand bg-surface-tint text-brand"
-                      : isSelected
-                        ? "border-2 border-ink-muted text-ink"
-                        : "border border-fieldline text-ink-muted"
+              <span
+                className={`text-[16px] font-semibold ${
+                  isSelected ? "text-white" : "text-ink"
                 }`}
               >
-                {isDone ? (
-                  <Sprout size={16} strokeWidth={2.5} />
-                ) : (
-                  date.getDate()
-                )}
-              </div>
+                {date.getDate()}
+              </span>
+              {isDone && (
+                <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-brand-accent text-white ring-2 ring-app">
+                  <Check size={10} strokeWidth={3} />
+                </span>
+              )}
             </button>
           );
         })}
