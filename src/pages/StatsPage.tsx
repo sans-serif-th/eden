@@ -24,9 +24,9 @@ export function StatsPage() {
   const daysStudied = dayRecords.filter((r) => r.status === "done").length;
   const percent = totalDays > 0 ? (daysStudied / totalDays) * 100 : 0;
 
-  const totalLogs = dayRecords
-    .flatMap((r) => Object.values(r.answers))
-    .filter((v) => v.trim().length > 0).length;
+  const daysLogged = dayRecords.filter((r) =>
+    Object.values(r.answers).some((v) => v.trim().length > 0),
+  ).length;
 
   const startDate = getPlanStartDate(
     activeEnrollment.startPreference,
@@ -65,9 +65,6 @@ export function StatsPage() {
                   (แก้ไข)
                 </button>
               </div>
-              <p className="text-[16px] text-ink-muted">
-                คาดว่าจะเรียนจบวันที่ {formatThaiDateShort(endDate)}
-              </p>
             </div>
           </div>
 
@@ -123,10 +120,10 @@ export function StatsPage() {
               บันทึกทั้งหมด
             </p>
             <p className="text-[19px] font-semibold text-ink">
-              {totalLogs} รายการ
+              {daysLogged} วัน
             </p>
             <p className="text-[16px] text-ink-muted">
-              คำตอบ ข้อคิด และคำอธิษฐานที่คุณบันทึกไว้
+              จำนวนวันที่คุณได้บันทึกคำตอบ ข้อคิด หรือคำอธิษฐานไว้
             </p>
           </div>
         </div>

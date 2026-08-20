@@ -16,12 +16,16 @@ import { AboutPage } from "./pages/AboutPage";
 import { StatsPage } from "./pages/StatsPage";
 
 function RootRoute() {
-  const { isAuthenticated, onboardingComplete } = useAppState();
+  const { isAuthenticated, onboardingComplete, bookSelected } = useAppState();
   if (!isAuthenticated) return <Navigate to="/login" replace />;
-  return onboardingComplete ? (
-    <SelectLevelPage />
+  if (!onboardingComplete) return <Navigate to="/onboarding/1" replace />;
+  // A returning user who already has an active enrollment has already been
+  // through the level/book picker — go straight to their plan instead of
+  // making them re-pick it on every login.
+  return bookSelected ? (
+    <Navigate to="/today" replace />
   ) : (
-    <Navigate to="/onboarding/1" replace />
+    <SelectLevelPage />
   );
 }
 

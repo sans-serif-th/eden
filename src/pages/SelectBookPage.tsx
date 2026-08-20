@@ -19,7 +19,7 @@ export function SelectBookPage() {
           <ScreenHeader title="เลือกเล่มที่เรียน" />
         </div>
         <div className="flex flex-1 flex-col gap-4 px-6 py-4">
-          <p className="text-[16px] font-semibold text-brand">EDEN</p>
+          <img src="/eden-logo.svg" alt="Eden" className="h-8 w-auto" />
           <h1 className="text-2xl font-semibold text-ink">
             เลือกเล่มที่กำลังเรียน
           </h1>

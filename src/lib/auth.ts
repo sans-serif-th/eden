@@ -38,17 +38,8 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
 // there's currently no way to establish it (outside the LINE client, before
 // the user has tapped the LINE login button) — callers should route to
 // LoginPage in that case.
-// TEMPORARY diagnostic logging — remove once the real-device auth failure
-// is root-caused. Prefixed so it's easy to filter/spot in the console.
-const log = (...args: unknown[]) => console.log("[bootstrapAuth]", ...args);
-
 export async function bootstrapAuth(): Promise<string | null> {
   const { data, error: sessionError } = await supabase.auth.getSession();
-  log("getSession", {
-    hasSession: !!data.session,
-    isAnonymous: data.session?.user.is_anonymous,
-    sessionError,
-  });
   // An anonymous session left over from before this app used real LINE
   // identity (or from local dev outside the LINE client) is never the right
   // session to keep reusing — always re-derive the LINE-linked identity
@@ -71,20 +62,10 @@ export async function bootstrapAuth(): Promise<string | null> {
     await supabase.auth.signOut();
   }
 
-  try {
-    await withTimeout(ensureLiffInit(), AUTH_TIMEOUT_MS);
-    log("ensureLiffInit done");
-  } catch (err) {
-    log("ensureLiffInit FAILED", err);
-    throw err;
-  }
-
-  const loggedIn = await isLiffLoggedIn();
-  log("isLiffLoggedIn", loggedIn);
-  if (!loggedIn) return null;
+  await withTimeout(ensureLiffInit(), AUTH_TIMEOUT_MS);
+  if (!(await isLiffLoggedIn())) return null;
 
   const idToken = getLiffIdToken();
-  log("getLiffIdToken", idToken ? `present (len ${idToken.length})` : idToken);
   if (!idToken) return null;
 
   const { data: signInData, error } = await withTimeout(
@@ -94,7 +75,6 @@ export async function bootstrapAuth(): Promise<string | null> {
     }),
     AUTH_TIMEOUT_MS,
   );
-  log("signInWithIdToken", { userId: signInData?.user?.id, error });
   if (error) throw error;
   return signInData.user?.id ?? null;
 }
