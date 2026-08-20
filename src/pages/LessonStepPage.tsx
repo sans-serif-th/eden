@@ -60,6 +60,18 @@ export function LessonStepPage() {
 
   if (!step || !dayContent) return null;
 
+  // These three steps ask the user to write something — block continuing
+  // past them with a blank answer instead of silently saving nothing.
+  const canContinue =
+    step.slug === "reading"
+      ? readingAnswer.trim().length > 0
+      : step.slug === "closing-prayer"
+        ? closingAnswer.trim().length > 0
+        : step.slug === "journal"
+          ? journalAnswers[0].trim().length > 0 &&
+            journalAnswers[1].trim().length > 0
+          : true;
+
   const persistDraft = () => {
     if (step.slug === "reading")
       setDayAnswer(dayNumber, `${stepNumber}-reading`, readingAnswer);
@@ -244,7 +256,7 @@ export function LessonStepPage() {
               </div>
             )}
             <div className="flex-1">
-              <PrimaryButton onClick={handleContinue}>
+              <PrimaryButton onClick={handleContinue} disabled={!canContinue}>
                 {step.buttonLabel}
               </PrimaryButton>
             </div>

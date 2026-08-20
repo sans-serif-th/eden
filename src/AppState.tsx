@@ -217,16 +217,11 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         setIsAuthenticated(true);
         setUserId(uid);
 
-        const { data: onboardingRow, error: onboardingError } = await supabase
+        const { data: onboardingRow } = await supabase
           .from("onboarding_answers")
           .select("*")
           .eq("user_id", uid)
           .maybeSingle();
-        console.log("[bootstrap] onboarding fetch", {
-          uid,
-          onboardingRow,
-          onboardingError,
-        });
         if (onboardingRow) {
           setOnboardingComplete(onboardingRow.onboarding_complete);
           setOnboarding({
@@ -259,6 +254,10 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
           }
           if (!cancelled) {
             setActiveEnrollment({ ...enrollmentFromRow(activeRow), dayRecords });
+            // A returning user with an existing active enrollment already
+            // has a level/book — route them straight to Today instead of
+            // back through the level/book picker on every login.
+            setBookSelected(true);
           }
         }
 
