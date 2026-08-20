@@ -79,7 +79,13 @@ type DevotionState = {
     startPreference: StartPreference,
     customStartDate: string,
   ) => void;
-  resumeArchivedEnrollment: (archivedId: string) => Promise<void>;
+  resumeArchivedEnrollment: (
+    archivedId: string,
+    newStart?: {
+      startPreference: StartPreference;
+      customStartDate: string;
+    },
+  ) => Promise<void>;
   cancelPendingEnrollment: () => void;
   selectBook: () => void;
   setDayAnswer: (day: number, key: string, value: string) => void;
@@ -383,7 +389,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         void upsertEnrollment(userId, nextEnrollment, true);
       }
     },
-    resumeArchivedEnrollment: async (archivedId) => {
+    resumeArchivedEnrollment: async (archivedId, newStart) => {
       const archived = pastEnrollments.find((e) => e.id === archivedId);
       if (!archived) return;
 
@@ -401,7 +407,16 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
           status: row.status ?? undefined,
         };
       }
-      const restored: Enrollment = { ...archived, dayRecords };
+      // dayRecords are keyed by Personal-Calendar day NUMBER, not a real
+      // date, so re-pointing the start date to today doesn't touch the
+      // logged answers at all — day 1 just now maps to a different real
+      // date. Optional: a resumed plan can restart its date reference
+      // while keeping every previously-logged Day intact.
+      const restored: Enrollment = {
+        ...archived,
+        ...newStart,
+        dayRecords,
+      };
       const oldEnrollment = activeEnrollment;
 
       setPastEnrollments((prev) => [
