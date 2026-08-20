@@ -12,14 +12,28 @@ export function NewPlanPage() {
   const navigate = useNavigate();
   const {
     activeEnrollment,
+    pastEnrollments,
     pendingEnrollment,
     confirmPendingEnrollment,
+    resumeArchivedEnrollment,
     cancelPendingEnrollment,
     skipPendingBook,
   } = useAppState();
   const [startPreference, setStartPreference] =
     useState<StartPreference>("today");
   const [customStartDate, setCustomStartDate] = useState("");
+  const [isResuming, setIsResuming] = useState(false);
+  // A user can have an archived Enrollment for this exact Level+Book already
+  // (they studied it before, switched away, and are now coming back) —
+  // offer to restore its progress instead of always starting from scratch.
+  const matchingArchived = pendingEnrollment
+    ? pastEnrollments.find(
+        (e) =>
+          e.level === pendingEnrollment.level &&
+          e.book === pendingEnrollment.book,
+      )
+    : undefined;
+  const [wantsFreshStart, setWantsFreshStart] = useState(false);
 
   useEffect(() => {
     // Only guard against landing here directly with nothing pending (e.g. a
@@ -49,6 +63,49 @@ export function NewPlanPage() {
     confirmPendingEnrollment(startPreference, customStartDate);
     navigate("/today");
   };
+
+  const handleResume = () => {
+    if (!matchingArchived) return;
+    setIsResuming(true);
+    void resumeArchivedEnrollment(matchingArchived.id).then(() => {
+      navigate("/today");
+    });
+  };
+
+  if (matchingArchived && !wantsFreshStart) {
+    return (
+      <ScreenShell>
+        <div className="flex flex-1 flex-col">
+          <div className="px-6">
+            <ScreenHeader title="ตั้งแผนการเฝ้าเดี่ยวใหม่" />
+          </div>
+          <div className="flex flex-1 flex-col gap-4 px-6 py-4">
+            <p className="rounded-2xl bg-surface-tint px-4 py-3 text-[16px] text-brand-accent">
+              คุณเคยเรียน {targetBook?.title ?? `เล่มที่ ${pendingEnrollment.book}`} มาก่อน
+              — ต้องการใช้ความคืบหน้าเดิมต่อ หรือเริ่มใหม่ทั้งหมด
+            </p>
+            <h1 className="text-2xl font-semibold text-ink">
+              ใช้ความคืบหน้าเดิม หรือเริ่มใหม่
+            </h1>
+            <p className="text-[16px] text-ink-muted">
+              ใช้ความคืบหน้าเดิม: กลับไปดำเนินต่อจากที่ค้างไว้ พร้อมคำตอบและบันทึกที่เคยทำ
+              <br />
+              เริ่มใหม่: แผนเดิมจะถูกเก็บไว้แยกต่างหาก แล้วเริ่มนับวันใหม่ตั้งแต่ต้น
+            </p>
+          </div>
+          <div className="flex flex-col gap-3 p-6">
+            <PrimaryButton onClick={handleResume} disabled={isResuming}>
+              ใช้ความคืบหน้าเดิม
+            </PrimaryButton>
+            <OutlineButton onClick={() => setWantsFreshStart(true)}>
+              เริ่มใหม่
+            </OutlineButton>
+            <OutlineButton onClick={handleCancel}>ยกเลิก</OutlineButton>
+          </div>
+        </div>
+      </ScreenShell>
+    );
+  }
 
   return (
     <ScreenShell>

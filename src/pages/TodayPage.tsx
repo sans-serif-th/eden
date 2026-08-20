@@ -83,6 +83,16 @@ export function TodayPage() {
   // currentDay from AppState clamps to a minimum of 1 for safe content lookup,
   // so check the raw (unclamped) value here to know if the plan has actually started.
   const planNotStartedYet = isToday && selectedDayNumber < 1;
+  const currentDayContent = getDayContent(
+    activeEnrollment.level,
+    activeEnrollment.book,
+    currentDay,
+  );
+  // A Day within the book's day count can still lack authored content (see
+  // Day readiness in CONTEXT.md) — never navigate into /lesson for one, since
+  // LessonStepPage has nothing to render and would just show a blank screen.
+  const currentDayNotReady =
+    !planNotStartedYet && !bookFinished && !currentDayContent;
 
   return (
     <ScreenShell>
@@ -147,6 +157,18 @@ export function TodayPage() {
                     เริ่มเล่มถัดไป
                   </PrimaryButton>
                 )}
+              </div>
+            ) : currentDayNotReady ? (
+              <div className="flex flex-col gap-3 rounded-[22px] bg-surface p-5 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.06)]">
+                <p className="text-[16px] font-semibold text-brand-accent">
+                  บทเรียนของวันนี้
+                </p>
+                <p className="text-[21px] font-semibold text-ink">
+                  บทเรียนนี้ยังไม่พร้อมใช้งาน
+                </p>
+                <p className="text-[16px] text-ink-muted">
+                  กรุณารอการอัปเดตเนื้อหา แล้วกลับมาใหม่อีกครั้ง
+                </p>
               </div>
             ) : (
               <div className="flex flex-col gap-3 rounded-[22px] bg-surface p-5 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.06)]">
@@ -222,7 +244,8 @@ export function TodayPage() {
         <div className="flex flex-col gap-2 p-6">
           {isToday ? (
             !planNotStartedYet &&
-            !bookFinished && (
+            !bookFinished &&
+            !currentDayNotReady && (
               <PrimaryButton onClick={handleCta}>{ctaLabel}</PrimaryButton>
             )
           ) : (

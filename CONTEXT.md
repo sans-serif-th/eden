@@ -21,7 +21,7 @@ One dated daily-devotion entry within a Book. The printed month/date (e.g. "ว�
 _Avoid_: Lesson (reserve for the abstract "one day's devotion" concept in UI copy; Day is the data/scheduling term)
 
 **Personal Calendar**:
-Each user's own Day-unlock timeline for one Enrollment, anchored to a Day-in-Book the user themself picks as their starting point (not always Day 1 — they may start mid-Book) rather than the real Gregorian calendar. From that start Day, one further Day unlocks per elapsed real day, with the day boundary always evaluated in a single fixed `Asia/Bangkok` timezone for every user (not per-user device timezone — the audience is assumed Thai). A user may skip the current Day and move on — the skipped Day is flagged rather than blocking progress. A Day whose content hasn't been authored/published yet is disabled regardless of unlock timing (see Day readiness).
+Each user's own Day-unlock timeline for one Enrollment, anchored to a Day-in-Book the user themself picks as their starting point (not always Day 1 — they may start mid-Book) rather than the real Gregorian calendar. From that start Day, one further Day unlocks per elapsed real day. The day boundary is evaluated using the user's own device timezone (`src/data/onboarding.ts`'s `getBookDayForDate`/`getPlanStartDate` use plain local `Date`) rather than a fixed `Asia/Bangkok` — accepted as fine in practice since the audience is assumed to be physically in Thailand, so device timezone and Asia/Bangkok coincide for virtually everyone. A user may skip the current Day and move on — the skipped Day is flagged rather than blocking progress. A Day whose content hasn't been authored/published yet is disabled regardless of unlock timing (see Day readiness).
 _Avoid_: Calendar mode, ตามปฏิทิน (ambiguous — could misread as real-world-calendar-locked, which this explicitly is not)
 
 **Enrollment**:
@@ -34,11 +34,11 @@ _Avoid_: Availability (too easily confused with unlock timing, which is a separa
 
 **Step**:
 One of 7 content blocks that make up a Day, matching the source worksheet's actual structure: อธิษฐาน (opening prayer) → ภาวนาพระวจนะ (memory verse) → อ่านพระธรรม (scripture reading + embedded response) → ทำความเข้าใจพระคัมภีร์ (understanding) → ข้อคิดและการตอบสนอง (reflection & response) → บันทึก (journal, 2 separate prompts) → อธิษฐาน (closing prayer).
-_Avoid_: 8-step flow (the currently-built UI has 8 steps because it split "อ่านพระธรรม" and a separate "คำถามจากพระธรรม" — this doesn't match the source and needs to be collapsed to 7)
+_Avoid_: 8-step flow (a stale concern from before the UI was collapsed to match the source — `STEP_DEFINITIONS` in `src/data/stepDefinitions.ts` is now the canonical 7)
 
 **Template Step** vs **Authored Step**:
-Confirmed by diffing every Day in Book 1 — the opening อธิษฐาน instruction and both บันทึก journal prompt labels are verbatim identical every single Day (Template Steps: fixed app copy, not per-Day content). ภาวนาพระวจนะ, อ่านพระธรรม, ทำความเข้าใจพระคัมภีร์, and ข้อคิดและการตอบสนอง genuinely differ every Day (Authored Steps: require real content ingestion per Day). The closing อธิษฐาน wasn't conclusively classified — check during parser-building.
-_Avoid_: treating all 7 Steps as equally needing content authoring — only the Authored ones do
+Confirmed by diffing every Day in Book 1 — the opening อธิษฐาน instruction and both บันทึก journal prompt labels are verbatim identical every single Day (Template Steps: fixed app copy, not per-Day content). ภาวนาพระวจนะ, อ่านพระธรรม, ทำความเข้าใจพระคัมภีร์, ข้อคิดและการตอบสนอง, and the closing อธิษฐาน all genuinely differ every Day (Authored Steps: require real content ingestion per Day) — confirmed for the closing prayer too once full-book extraction was done (`closingPrayer` runs a few hundred characters and differs Day to Day). Only the opening อธิษฐาน and บันทึก are Template Steps.
+_Avoid_: treating all 7 Steps as equally needing content authoring — only the 5 Authored ones do
 
 **Journal** (บันทึก):
 The Day's closing reflection Step. Always exactly two separate prompts in the source — "ท่านได้บทเรียนอะไรบ้าง…" (what did you learn) and "พระเจ้าตรัสอะไรกับท่านบ้าง…" (what did God say to you) — modeled as two distinct fields, never flattened into one free-text box.

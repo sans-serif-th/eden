@@ -79,6 +79,7 @@ type DevotionState = {
     startPreference: StartPreference,
     customStartDate: string,
   ) => void;
+  resumeArchivedEnrollment: (archivedId: string) => Promise<void>;
   cancelPendingEnrollment: () => void;
   selectBook: () => void;
   setDayAnswer: (day: number, key: string, value: string) => void;
@@ -380,6 +381,38 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       if (userId) {
         void upsertEnrollment(userId, oldEnrollment, false);
         void upsertEnrollment(userId, nextEnrollment, true);
+      }
+    },
+    resumeArchivedEnrollment: async (archivedId) => {
+      const archived = pastEnrollments.find((e) => e.id === archivedId);
+      if (!archived) return;
+
+      // pastEnrollments load with empty dayRecords (see bootstrap fetch) —
+      // fetch the real ones now that we're actually restoring this Enrollment.
+      const { data: dayRows } = await supabase
+        .from("day_records")
+        .select("*")
+        .eq("enrollment_id", archived.id);
+      const dayRecords: Record<number, DayRecord> = {};
+      for (const row of dayRows ?? []) {
+        dayRecords[row.day_number] = {
+          answers: row.answers ?? {},
+          currentStep: row.current_step ?? 0,
+          status: row.status ?? undefined,
+        };
+      }
+      const restored: Enrollment = { ...archived, dayRecords };
+      const oldEnrollment = activeEnrollment;
+
+      setPastEnrollments((prev) => [
+        ...prev.filter((e) => e.id !== archivedId),
+        oldEnrollment,
+      ]);
+      setActiveEnrollment(restored);
+      setPendingEnrollment(null);
+      if (userId) {
+        void upsertEnrollment(userId, oldEnrollment, false);
+        void upsertEnrollment(userId, restored, true);
       }
     },
     cancelPendingEnrollment: () => setPendingEnrollment(null),
