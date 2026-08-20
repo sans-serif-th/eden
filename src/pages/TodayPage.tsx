@@ -129,7 +129,7 @@ export function TodayPage() {
             planEndDate={planEndDate}
           />
         </div>
-        <div className="flex flex-1 flex-col gap-4 px-6 py-4">
+        <div className="flex flex-1 flex-col gap-4 px-6 pt-4 pb-[190px]">
           <h1 className="text-[25px] font-semibold text-ink">
             สวัสดี, {lineProfile?.displayName ?? mockUserName}
           </h1>
@@ -251,7 +251,7 @@ export function TodayPage() {
           )}
         </div>
 
-        <div className="flex flex-col gap-2 p-6">
+        <div className="fixed bottom-0 left-1/2 flex w-full max-w-[430px] -translate-x-1/2 flex-col gap-2 bg-app p-6">
           {isToday ? (
             !planNotStartedYet &&
             !bookFinished &&

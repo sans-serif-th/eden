@@ -61,7 +61,7 @@ export function HistoryPage() {
   return (
     <ScreenShell>
       <div className="flex flex-1 flex-col">
-        <div className="flex flex-1 flex-col gap-3 px-6 py-4">
+        <div className="flex flex-1 flex-col gap-3 px-6 pt-4 pb-[140px]">
           <h1 className="text-[26px] font-semibold text-ink">ประวัติของฉัน</h1>
           <p className="text-[16px] font-medium text-brand-accent">
             {book?.title ?? "—"}
@@ -119,7 +119,7 @@ export function HistoryPage() {
           </div>
         </div>
 
-        <div className="p-6">
+        <div className="fixed bottom-0 left-1/2 w-full max-w-[430px] -translate-x-1/2 bg-app p-6">
           <BottomNav active="history" />
         </div>
       </div>

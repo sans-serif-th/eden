@@ -1,4 +1,5 @@
-import { ChevronRight, LogOut } from "lucide-react";
+import { useState } from "react";
+import { Check, ChevronRight, Copy, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ScreenShell } from "../components/ScreenShell";
 import { BottomNav } from "../components/BottomNav";
@@ -7,11 +8,20 @@ import { useAppState } from "../AppState";
 
 export function ProfilePage() {
   const navigate = useNavigate();
-  const { lineProfile, onboarding, logout } = useAppState();
+  const { userId, lineProfile, onboarding, logout } = useAppState();
+  const [copied, setCopied] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate("/login");
+  };
+
+  const handleCopyUserId = () => {
+    if (!userId) return;
+    void navigator.clipboard.writeText(userId).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
   };
 
   const settingsRows: { label: string; value: string }[] = [
@@ -29,7 +39,7 @@ export function ProfilePage() {
   return (
     <ScreenShell>
       <div className="flex flex-1 flex-col">
-        <div className="flex flex-1 flex-col gap-6 px-6 py-6">
+        <div className="flex flex-1 flex-col gap-6 px-6 pt-6 pb-[140px]">
           <div className="flex flex-col items-center gap-3 pt-4">
             {lineProfile?.pictureUrl ? (
               <img
@@ -43,6 +53,22 @@ export function ProfilePage() {
             <p className="text-[17px] font-semibold text-ink">
               {lineProfile?.displayName ?? mockUserName}
             </p>
+            {userId && (
+              <button
+                type="button"
+                onClick={handleCopyUserId}
+                className="flex items-center gap-1.5 rounded-full bg-surface px-3 py-1.5"
+              >
+                <span className="font-mono text-[12px] text-ink-faint">
+                  {userId}
+                </span>
+                {copied ? (
+                  <Check size={13} className="shrink-0 text-brand-accent" />
+                ) : (
+                  <Copy size={13} className="shrink-0 text-ink-faint" />
+                )}
+              </button>
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
@@ -117,7 +143,7 @@ export function ProfilePage() {
           </p>
         </div>
 
-        <div className="p-6">
+        <div className="fixed bottom-0 left-1/2 w-full max-w-[430px] -translate-x-1/2 bg-app p-6">
           <BottomNav active="profile" />
         </div>
       </div>

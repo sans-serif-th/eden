@@ -53,6 +53,7 @@ export interface PendingEnrollment {
 type DevotionState = {
   isLoading: boolean;
   isAuthenticated: boolean;
+  userId: string | null;
   lineProfile: LineProfile | null;
   onboardingComplete: boolean;
   onboarding: OnboardingAnswers;
@@ -316,6 +317,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const value: DevotionState = {
     isLoading,
     isAuthenticated,
+    userId,
     lineProfile,
     onboardingComplete,
     onboarding,

@@ -38,7 +38,7 @@ export function StatsPage() {
   return (
     <ScreenShell>
       <div className="flex flex-1 flex-col">
-        <div className="flex flex-1 flex-col gap-4 px-6 py-6">
+        <div className="flex flex-1 flex-col gap-4 px-6 pt-6 pb-[140px]">
           <h1 className="text-2xl font-semibold text-ink">เล่มของฉัน</h1>
 
           <div className="flex flex-col gap-2 rounded-[18px] bg-surface p-5 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.06)]">
@@ -128,7 +128,7 @@ export function StatsPage() {
           </div>
         </div>
 
-        <div className="p-6">
+        <div className="fixed bottom-0 left-1/2 w-full max-w-[430px] -translate-x-1/2 bg-app p-6">
           <BottomNav active="books" />
         </div>
       </div>
