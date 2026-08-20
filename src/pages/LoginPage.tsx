@@ -7,15 +7,19 @@ import { useAppState } from "../AppState";
 
 export function LoginPage() {
   const navigate = useNavigate();
-  const { lineProfile } = useAppState();
+  const { isAuthenticated } = useAppState();
 
-  // A LINE session may already exist by the time this page renders — either
-  // the app is running inside the LINE client (which auto-authenticates on
-  // init, no button tap needed) or the user just completed the login
-  // redirect round-trip and landed back here. Either way, skip the button.
+  // Redirect once the Supabase session is actually established. This must
+  // check isAuthenticated, not lineProfile — lineProfile only reflects
+  // whether LIFF itself is logged in, which can be true even when the
+  // Supabase token exchange has failed. Gating on lineProfile caused an
+  // infinite redirect loop for exactly that case: "/" bounces to "/login"
+  // because isAuthenticated is false, "/login" immediately bounces back to
+  // "/" because lineProfile is true, forever — fast enough to hit Safari's
+  // history.replaceState() rate limit and crash the page blank.
   useEffect(() => {
-    if (lineProfile) navigate("/", { replace: true });
-  }, [lineProfile, navigate]);
+    if (isAuthenticated) navigate("/", { replace: true });
+  }, [isAuthenticated, navigate]);
 
   const handleLogin = () => {
     // Outside the LINE client this navigates the whole page away to LINE's
