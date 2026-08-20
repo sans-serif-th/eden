@@ -5,7 +5,7 @@ import { PrimaryButton } from "../components/PrimaryButton";
 import { ProgressBar } from "../components/ProgressBar";
 import { BottomNav } from "../components/BottomNav";
 import { LevelBookSwitcher } from "../components/LevelBookSwitcher";
-import { WeekStrip } from "../components/WeekStrip";
+import { Calendar } from "../components/Calendar";
 import { STEP_DEFINITIONS, TOTAL_STEPS } from "../data/stepDefinitions";
 import { getDayContent } from "../data/dayContent";
 import { getBook } from "../data/books";
@@ -51,6 +51,12 @@ export function TodayPage() {
   const planStartDate = getPlanStartDate(
     activeEnrollment.startPreference,
     activeEnrollment.customStartDate,
+  );
+  const planEndDate = new Date(planStartDate);
+  planEndDate.setDate(
+    planEndDate.getDate() +
+      (Number.isFinite(totalDaysInBook) ? totalDaysInBook : 31) -
+      1,
   );
   const doneDates = new Set(
     Object.entries(activeEnrollment.dayRecords)
@@ -115,11 +121,12 @@ export function TodayPage() {
           )}
         </div>
         <div className="px-6 pt-4">
-          <WeekStrip
+          <Calendar
             doneDates={doneDates}
             selectedDate={selectedDate}
             onSelectDate={setSelectedDate}
-            onGoToToday={() => setSelectedDate(new Date())}
+            planStartDate={planStartDate}
+            planEndDate={planEndDate}
           />
         </div>
         <div className="flex flex-1 flex-col gap-4 px-6 py-4">

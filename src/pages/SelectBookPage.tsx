@@ -16,7 +16,7 @@ export function SelectBookPage() {
     <ScreenShell>
       <div className="flex flex-1 flex-col">
         <div className="px-6">
-          <ScreenHeader title="เลือกเล่มที่เรียน" />
+          <ScreenHeader title="แผนการเรียน" />
         </div>
         <div className="flex flex-1 flex-col gap-4 px-6 py-4">
           <img src="/eden-logo.svg" alt="Eden" className="h-8 w-[99px]" />
@@ -28,10 +28,6 @@ export function SelectBookPage() {
               ระดับที่เลือก: <span className="font-medium text-ink">{levelLabel}</span>
             </p>
           )}
-          <p className="text-[16px] text-ink-muted">
-            เริ่มต้นด้วยการเลือกคู่มือที่ต้องการเรียน
-          </p>
-
           <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-2 rounded-[18px] border-2 border-brand-accent bg-surface p-[18px]">
               <p className="text-[18px] font-semibold text-ink">
