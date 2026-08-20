@@ -217,11 +217,16 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         setIsAuthenticated(true);
         setUserId(uid);
 
-        const { data: onboardingRow } = await supabase
+        const { data: onboardingRow, error: onboardingError } = await supabase
           .from("onboarding_answers")
           .select("*")
           .eq("user_id", uid)
           .maybeSingle();
+        console.log("[bootstrap] onboarding fetch", {
+          uid,
+          onboardingRow,
+          onboardingError,
+        });
         if (onboardingRow) {
           setOnboardingComplete(onboardingRow.onboarding_complete);
           setOnboarding({
