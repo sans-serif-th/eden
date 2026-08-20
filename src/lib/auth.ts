@@ -39,13 +39,22 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
 // the user has tapped the LINE login button) — callers should route to
 // LoginPage in that case.
 export async function bootstrapAuth(): Promise<string | null> {
-  const { data } = await supabase.auth.getSession();
+  const { data, error: sessionError } = await supabase.auth.getSession();
   // An anonymous session left over from before this app used real LINE
   // identity (or from local dev outside the LINE client) is never the right
   // session to keep reusing — always re-derive the LINE-linked identity
   // instead of trusting it.
   if (data.session && !data.session.user.is_anonymous) {
     return data.session.user.id;
+  }
+  if (sessionError) {
+    // getSession() tried to silently refresh an expired access token and
+    // the server rejected the stored refresh token (already rotated/
+    // revoked — seen live after repeated testing). supabase-js doesn't
+    // always clear its own storage when that happens, so a poisoned
+    // session can keep getting retried and rejected on every load. Force
+    // a clean local slate before falling through to a fresh LINE sign-in.
+    await supabase.auth.signOut();
   }
 
   await withTimeout(ensureLiffInit(), AUTH_TIMEOUT_MS);
